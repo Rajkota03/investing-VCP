@@ -1,0 +1,358 @@
+// VCP Strategy — Minervini SEPA Backtest
+//@version=6
+strategy("VCP Strategy — Minervini", overlay=true, max_labels_count=50, max_lines_count=50, initial_capital=1000000, default_qty_type=strategy.fixed, default_qty_value=1, commission_type=strategy.commission.percent, commission_value=0.05, slippage=1, pyramiding=0, calc_on_every_tick=true)
+
+grp_stage2 = "Stage 2 Filter"
+sma_fast = input.int(50, "Fast SMA", minval=10, maxval=100, group=grp_stage2)
+sma_mid = input.int(150, "Mid SMA", minval=50, maxval=200, group=grp_stage2)
+sma_slow = input.int(200, "Slow SMA", minval=100, maxval=300, group=grp_stage2)
+require_sma = input.bool(true, "Require SMA Alignment", group=grp_stage2)
+max_from_high = input.float(25, "Max % from 52W High", minval=5, maxval=50, group=grp_stage2)
+
+grp_vcp = "VCP Detection"
+zigzag_pct = input.float(5.0, "ZigZag %", minval=2, maxval=15, step=0.5, group=grp_vcp)
+lookback = input.int(120, "Lookback Bars", minval=50, maxval=300, group=grp_vcp)
+max_ratio = input.float(0.95, "Max Contraction Ratio", minval=0.5, maxval=1.0, step=0.05, group=grp_vcp)
+min_t = input.int(2, "Min Contractions", minval=2, maxval=4, group=grp_vcp)
+max_t = input.int(6, "Max Contractions", minval=3, maxval=8, group=grp_vcp)
+max_first = input.float(40, "Max First Contraction %", minval=10, maxval=60, group=grp_vcp)
+min_last = input.float(2, "Min Last Contraction %", minval=0.5, maxval=10, step=0.5, group=grp_vcp)
+pivot_dist = input.float(8, "Max Distance to Pivot %", minval=2, maxval=15, group=grp_vcp)
+recency_bars = input.int(15, "Max Bars Since Last T", minval=5, maxval=30, group=grp_vcp)
+
+grp_vol = "Volume"
+vol_check = input.bool(true, "Check Volume Decline", group=grp_vol)
+vol_thresh = input.float(0.8, "Vol Decline Threshold", minval=0.3, maxval=1.0, step=0.05, group=grp_vol)
+vol_breakout = input.float(1.5, "Breakout Vol Mult", minval=1.0, maxval=3.0, step=0.1, group=grp_vol)
+
+grp_entry = "Entry Rules"
+close_range_pct = input.float(75, "Close in Top N% of Range", minval=50, maxval=100, step=5, group=grp_entry)
+min_rs_rating = input.float(70, "Min RS Rating", minval=0, maxval=100, step=5, group=grp_entry)
+rs_benchmark = input.string("NIFTY", "RS Benchmark", group=grp_entry)
+
+grp_exit = "Exit Rules"
+hard_stop_pct = input.float(8.0, "Hard Stop %", minval=3, maxval=15, step=0.5, group=grp_exit)
+sma10_exit_days = input.int(3, "Days Below 10 SMA", minval=1, maxval=5, group=grp_exit)
+use_sma50_exit = input.bool(true, "Exit Below 50 SMA", group=grp_exit)
+climax_vol_mult = input.float(2.0, "Climax Vol Mult", minval=1.5, maxval=4.0, step=0.25, group=grp_exit)
+climax_gain_pct = input.float(5.0, "Climax Gain %", minval=2, maxval=15, step=0.5, group=grp_exit)
+
+risk_pct = input.float(1.0, "Risk % of Portfolio", minval=0.25, maxval=3.0, step=0.25)
+show_sma = input.bool(true, "Show SMAs")
+show_swings = input.bool(true, "Show Swings")
+show_table = input.bool(true, "Show Table")
+show_pivot = input.bool(true, "Show Pivot")
+
+ma10 = ta.sma(close, 10)
+ma50 = ta.sma(close, sma_fast)
+ma150 = ta.sma(close, sma_mid)
+ma200 = ta.sma(close, sma_slow)
+price_above = close > ma50 and close > ma150 and close > ma200
+sma_ok = ma50 > ma150 and ma150 > ma200
+ma200_up = ma200 > ma200[20]
+high_252 = ta.highest(high, 252)
+low_252 = ta.lowest(low, 252)
+pct_hi = (high_252 - close) / high_252 * 100
+pct_lo = (close - low_252) / low_252 * 100
+stage2 = price_above and (not require_sma or sma_ok) and ma200_up and pct_hi <= max_from_high and pct_lo >= 30
+vol_50 = ta.sma(volume, 50)
+vol_10 = ta.sma(volume, 10)
+bench = request.security(rs_benchmark, timeframe.period, close)
+sp_val = bar_index >= 252 ? (close - close[252]) / close[252] * 100 : 0.0
+bp_val = bar_index >= 252 ? (bench - bench[252]) / bench[252] * 100 : 0.0
+rs_val = 50 + 50 * (2 / (1 + math.exp(-(sp_val - bp_val) / 20)) - 1)
+
+plot(show_sma ? ma10 : na, "10", color=color.new(color.white, 50))
+plot(show_sma ? ma50 : na, "50", color=color.new(color.yellow, 30))
+plot(show_sma ? ma150 : na, "150", color=color.new(color.orange, 30))
+plot(show_sma ? ma200 : na, "200", color=color.new(color.red, 30))
+
+safe_f(float[] a, int i) => i >= 0 and i < array.size(a) ? array.get(a, i) : na
+safe_i(int[] a, int i) => i >= 0 and i < array.size(a) ? array.get(a, i) : na
+
+var float zzp = na
+var int zzt = 0
+var int zzb = 0
+var float[] swp = array.new_float(0)
+var int[] swb = array.new_int(0)
+var int[] swt2 = array.new_int(0)
+zzth = zigzag_pct / 100
+
+if bar_index == 0
+    zzp := close
+    zzt := 0
+    zzb := 0
+
+if not na(zzp)
+    if zzt == -1 or zzt == 0
+        if high >= zzp * (1 + zzth)
+            array.push(swp, high)
+            array.push(swb, bar_index)
+            array.push(swt2, 1)
+            zzp := high
+            zzt := 1
+            zzb := bar_index
+        else if low < zzp
+            n = array.size(swt2)
+            if n > 0 and array.get(swt2, n-1) == -1
+                array.set(swp, n-1, low)
+                array.set(swb, n-1, bar_index)
+            zzp := low
+            zzb := bar_index
+    if zzt == 1
+        if low <= zzp * (1 - zzth)
+            array.push(swp, low)
+            array.push(swb, bar_index)
+            array.push(swt2, -1)
+            zzp := low
+            zzt := -1
+            zzb := bar_index
+        else if high > zzp
+            n = array.size(swt2)
+            if n > 0 and array.get(swt2, n-1) == 1
+                array.set(swp, n-1, high)
+                array.set(swb, n-1, bar_index)
+            zzp := high
+            zzb := bar_index
+
+while array.size(swb) > 0 and array.get(swb, 0) < bar_index - lookback
+    array.shift(swp)
+    array.shift(swb)
+    array.shift(swt2)
+
+var bool vcp_on = false
+var float vpiv = na
+var int vcnt = 0
+var float vstop = na
+var float[] vdepths = array.new_float(0)
+sz = array.size(swt2)
+var float[] cd = array.new_float(0)
+var float[] chl = array.new_float(0)
+var float[] cll = array.new_float(0)
+var int[] clb = array.new_int(0)
+var int[] chb2 = array.new_int(0)
+array.clear(cd)
+array.clear(chl)
+array.clear(cll)
+array.clear(clb)
+array.clear(chb2)
+
+if sz >= 4
+    for i = 0 to sz - 2
+        t0 = safe_i(swt2, i)
+        t1 = safe_i(swt2, i+1)
+        if not na(t0) and not na(t1) and t0 == 1 and t1 == -1
+            hv = safe_f(swp, i)
+            lv = safe_f(swp, i+1)
+            if not na(hv) and not na(lv) and hv > 0
+                array.push(cd, (hv-lv)/hv*100)
+                array.push(chl, hv)
+                array.push(cll, lv)
+                array.push(clb, nz(safe_i(swb, i+1)))
+                array.push(chb2, nz(safe_i(swb, i)))
+
+nc = array.size(cd)
+var float bsv = -1.0
+var int bst = -1
+var int ben = -1
+bsv := -1.0
+bst := -1
+ben := -1
+vcp_on := false
+vpiv := na
+vstop := na
+vcnt := 0
+
+if nc >= min_t and stage2
+    for ei = nc-1 to 0
+        elb = safe_i(clb, ei)
+        if na(elb) or elb < bar_index - recency_bars
+            continue
+        for si = math.max(0, ei-max_t+1) to math.max(0, ei-min_t+1)
+            ns = ei - si + 1
+            if ns < min_t or si >= nc or ei >= nc
+                continue
+            fd = safe_f(cd, si)
+            ld = safe_f(cd, ei)
+            if na(fd) or na(ld) or fd > max_first or ld < min_last
+                continue
+            tight = true
+            for j = si+1 to ei
+                a = safe_f(cd, j)
+                b = safe_f(cd, j-1)
+                if na(a) or na(b) or a > b * max_ratio
+                    tight := false
+                    break
+            if not tight
+                continue
+            brk = false
+            if ei+1 <= nc-1
+                for k = ei+1 to nc-1
+                    dk = safe_f(cd, k)
+                    if not na(dk) and not na(fd) and dk > fd * 1.1
+                        brk := true
+                        break
+            if brk
+                continue
+            p = nz(safe_f(chl, si))
+            for k = si+1 to ei
+                hk = safe_f(chl, k)
+                if not na(hk)
+                    p := math.max(p, hk)
+            if p <= 0 or close > p * 1.03
+                continue
+            d = (p - close) / p * 100
+            if d > pivot_dist or d < -3
+                continue
+            ar = 0.0
+            cn = 0
+            for j = si+1 to ei
+                a = safe_f(cd, j)
+                b = safe_f(cd, j-1)
+                if not na(a) and not na(b) and b > 0
+                    ar += a/b
+                    cn += 1
+            if cn > 0
+                ar /= cn
+            sc = ns*15 + (1-ar)*30 + (1-math.abs(d)/pivot_dist)*25
+            if sc > bsv
+                bsv := sc
+                bst := si
+                ben := ei
+    if bst >= 0 and ben >= 0 and bst < nc and ben < nc
+        vok = true
+        if vol_check and not na(vol_50) and vol_50 > 0 and not na(vol_10)
+            vok := (vol_10/vol_50) < vol_thresh
+        if vok or not vol_check
+            vcp_on := true
+            vpiv := nz(safe_f(chl, bst))
+            vstop := nz(safe_f(cll, ben))
+            for k = bst+1 to ben
+                hk = safe_f(chl, k)
+                if not na(hk)
+                    vpiv := math.max(vpiv, hk)
+                lk = safe_f(cll, k)
+                if not na(lk)
+                    vstop := math.min(vstop, lk)
+            vcnt := ben - bst + 1
+            array.clear(vdepths)
+            for k = bst to ben
+                dk = safe_f(cd, k)
+                if not na(dk)
+                    array.push(vdepths, dk)
+
+drng = high - low
+cir = drng > 0 ? (close-low)/drng*100 : 50.0
+c_bo = close > vpiv and close[1] <= nz(vpiv) and vcp_on and not na(vpiv)
+c_vol = not na(vol_50) and vol_50 > 0 ? volume > vol_50*vol_breakout : true
+c_cl = cir >= close_range_pct
+c_rs = rs_val >= min_rs_rating
+entry_ok = c_bo and c_vol and c_cl and c_rs
+
+var float ep = na
+var int bit2 = 0
+var int dbs = 0
+
+if entry_ok and strategy.position_size == 0
+    stp = close * (1 - hard_stop_pct/100)
+    rps = close - stp
+    if rps > 0
+        ra = strategy.equity * risk_pct / 100
+        q = math.floor(ra / rps)
+        if q > 0
+            strategy.entry("VCP Long", strategy.long, qty=q)
+            ep := close
+            bit2 := 0
+            dbs := 0
+
+if strategy.position_size > 0
+    bit2 += 1
+    if close <= ep * (1 - hard_stop_pct/100)
+        strategy.close("VCP Long", comment="Hard Stop")
+    if close < ma10
+        dbs += 1
+    else
+        dbs := 0
+    if dbs >= sma10_exit_days
+        strategy.close("VCP Long", comment="Below 10SMA")
+    if use_sma50_exit and close < ma50
+        strategy.close("VCP Long", comment="Below 50SMA")
+    dg = (close-open)/open*100
+    if dg >= climax_gain_pct and not na(vol_50) and vol_50 > 0 and volume > vol_50*climax_vol_mult and bit2 > 5
+        strategy.close("VCP Long", comment="Climax Top")
+    if not stage2
+        strategy.close("VCP Long", comment="Stage2 Fail")
+
+if strategy.position_size == 0
+    bit2 := 0
+    dbs := 0
+
+var line pvl = na
+if show_pivot
+    if not na(pvl)
+        line.delete(pvl)
+    if vcp_on and not na(vpiv)
+        pvl := line.new(bar_index-30, vpiv, bar_index+5, vpiv, color=color.new(color.aqua, 20), style=line.style_dashed, width=2)
+
+var line stl = na
+if show_pivot
+    if not na(stl)
+        line.delete(stl)
+    if strategy.position_size > 0 and not na(ep)
+        stl := line.new(bar_index-15, ep*(1-hard_stop_pct/100), bar_index+5, ep*(1-hard_stop_pct/100), color=color.new(color.red, 20), style=line.style_dotted, width=1)
+
+var label vlbl = na
+if not na(vlbl)
+    label.delete(vlbl)
+if vcp_on and array.size(vdepths) > 0
+    dstr = ""
+    for i = 0 to array.size(vdepths)-1
+        if i > 0
+            dstr += ">"
+        dstr += str.tostring(array.get(vdepths, i), "#.#") + "%"
+    dpv = vpiv > 0 ? (vpiv-close)/vpiv*100 : 0.0
+    ltxt = "VCP " + str.tostring(vcnt) + "T\n" + dstr + "\nPivot:" + str.tostring(vpiv, "#.##") + "\n" + str.tostring(dpv, "#.#") + "% away"
+    lcol = dpv <= 3 ? color.green : dpv <= 5 ? color.yellow : color.orange
+    vlbl := label.new(bar_index, low*0.98, ltxt, style=label.style_label_up, color=lcol, textcolor=color.white, size=size.normal)
+
+if show_swings and sz > 0 and barstate.islast
+    sidx = math.max(0, sz-10)
+    for i = sidx to sz-1
+        if i >= array.size(swb)
+            break
+        if array.get(swb, i) >= bar_index - lookback
+            if array.get(swt2, i) == 1
+                label.new(array.get(swb, i), array.get(swp, i), "H", style=label.style_none, textcolor=color.new(color.orange, 40), size=size.small)
+            else
+                label.new(array.get(swb, i), array.get(swp, i), "L", style=label.style_none, textcolor=color.new(color.orange, 40), size=size.small)
+
+var table tb = table.new(position.top_right, 2, 10, bgcolor=color.new(color.black, 20), border_width=1, border_color=color.new(color.gray, 60))
+if show_table and barstate.islast
+    table.cell(tb, 0, 0, "Stage 2", text_color=color.gray, text_size=size.small)
+    table.cell(tb, 1, 0, stage2 ? "PASS" : "FAIL", text_color=stage2 ? color.green : color.red, text_size=size.small)
+    table.cell(tb, 0, 1, "RS Rating", text_color=color.gray, text_size=size.small)
+    table.cell(tb, 1, 1, str.tostring(rs_val, "#") + "/" + str.tostring(min_rs_rating, "#"), text_color=rs_val >= min_rs_rating ? color.green : color.red, text_size=size.small)
+    table.cell(tb, 0, 2, "VCP", text_color=color.gray, text_size=size.small)
+    table.cell(tb, 1, 2, vcp_on ? str.tostring(vcnt) + "T" : "---", text_color=vcp_on ? color.green : color.gray, text_size=size.small)
+    ck = (c_vol ? "V" : "-") + (c_cl ? "C" : "-") + (c_rs ? "R" : "-")
+    table.cell(tb, 0, 3, "Entry", text_color=color.gray, text_size=size.small)
+    table.cell(tb, 1, 3, ck, text_color=c_vol and c_cl and c_rs ? color.green : color.orange, text_size=size.small)
+    table.cell(tb, 0, 4, "Position", text_color=color.gray, text_size=size.small)
+    table.cell(tb, 1, 4, strategy.position_size > 0 ? "LONG " + str.tostring(bit2) + "d" : "FLAT", text_color=strategy.position_size > 0 ? color.green : color.gray, text_size=size.small)
+    if strategy.position_size > 0 and not na(ep)
+        table.cell(tb, 0, 5, "Stop", text_color=color.gray, text_size=size.small)
+        table.cell(tb, 1, 5, str.tostring(ep*(1-hard_stop_pct/100), "#.##"), text_color=color.red, text_size=size.small)
+    else
+        table.cell(tb, 0, 5, "Stop", text_color=color.gray, text_size=size.small)
+        table.cell(tb, 1, 5, "---", text_color=color.gray, text_size=size.small)
+    vr = not na(vol_50) and vol_50 > 0 ? volume/vol_50 : 0.0
+    table.cell(tb, 0, 6, "Vol/50d", text_color=color.gray, text_size=size.small)
+    table.cell(tb, 1, 6, str.tostring(vr, "#.#") + "x", text_color=vr > 1.5 ? color.green : color.white, text_size=size.small)
+    table.cell(tb, 0, 7, "Close %", text_color=color.gray, text_size=size.small)
+    table.cell(tb, 1, 7, str.tostring(cir, "#") + "%", text_color=cir >= 75 ? color.green : color.orange, text_size=size.small)
+    table.cell(tb, 0, 8, "52W High", text_color=color.gray, text_size=size.small)
+    table.cell(tb, 1, 8, str.tostring(pct_hi, "#.#") + "%", text_color=pct_hi < 10 ? color.green : color.orange, text_size=size.small)
+    table.cell(tb, 0, 9, "SMA Align", text_color=color.gray, text_size=size.small)
+    table.cell(tb, 1, 9, sma_ok ? "YES" : "NO", text_color=sma_ok ? color.green : color.red, text_size=size.small)
+
+bgcolor(vcp_on ? color.new(color.green, 95) : na)

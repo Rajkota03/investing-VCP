@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VCP Scanner</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: #0a0a0f;
+    color: #e8e8f0;
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.container {
+    text-align: center;
+    padding: 40px 20px;
+}
+h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    letter-spacing: 4px;
+    color: #00e676;
+    margin-bottom: 8px;
+}
+.sub {
+    color: #8888a0;
+    font-size: 15px;
+    margin-bottom: 48px;
+}
+.cards {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.card {
+    background: #12121a;
+    border: 2px solid #2a2a3a;
+    border-radius: 16px;
+    padding: 40px 36px;
+    width: 300px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.card:hover {
+    border-color: #00e676;
+    transform: translateY(-4px);
+}
+.card h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+.card p {
+    color: #8888a0;
+    font-size: 14px;
+    line-height: 1.6;
+}
+.card.action h2 { color: #00e676; }
+.card.action { border-color: #00e67633; }
+.card.dash h2 { color: #448aff; }
+.card.dash { border-color: #448aff33; }
+.footer {
+    margin-top: 48px;
+    color: #4a4a5a;
+    font-size: 12px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>VCP SCANNER</h1>
+    <div class="sub">Minervini SEPA Method &middot; NSE Nifty 200 &middot; Updated Daily at 4 PM IST</div>
+    <div class="cards">
+        <a href="action.html" class="card action">
+            <h2>ACTION BOARD</h2>
+            <p>Ready-to-trade setups only.<br>GREEN = buy, YELLOW = watch.<br>Full trade plan included.</p>
+        </a>
+        <a href="dashboard.html" class="card dash">
+            <h2>FULL DASHBOARD</h2>
+            <p>All detected VCP setups.<br>Sortable, filterable, with<br>complete enrichment data.</p>
+        </a>
+    </div>
+    <div class="footer">
+        Delivery % &middot; Institutional Holdings &middot; RS Rating &middot; Sector Momentum &middot; Earnings Calendar
+    </div>
+</div>
+</body>
+</html>

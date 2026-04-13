@@ -1,0 +1,434 @@
+// VCP Scanner — Volatility Contraction Pattern Indicator
+// Based on Mark Minervini's SEPA Method
+// Detects tightening contractions, marks pivots, and alerts on setups
+//
+// HOW TO USE:
+// 1. Go to TradingView → Pine Editor → paste this code → Add to Chart
+// 2. Use on DAILY timeframe
+// 3. Green "VCP" label = active setup forming
+// 4. Blue dashed line = pivot price (your entry point)
+// 5. Orange triangles = contraction swing highs/lows
+// 6. Table shows live contraction measurements
+
+//@version=6
+indicator("VCP Scanner", overlay=true, max_labels_count=50, max_lines_count=50)
+
+// ──────────────────────────────────────────────────────────────
+// INPUTS
+// ──────────────────────────────────────────────────────────────
+
+grp_stage2 = "Stage 2 Filter"
+sma_fast    = input.int(50,  "Fast SMA",      minval=10, maxval=100, group=grp_stage2)
+sma_mid     = input.int(150, "Mid SMA",       minval=50, maxval=200, group=grp_stage2)
+sma_slow    = input.int(200, "Slow SMA",      minval=100, maxval=300, group=grp_stage2)
+require_sma = input.bool(true, "Require SMA Alignment (50>150>200)", group=grp_stage2)
+max_from_high = input.float(25, "Max % from 52W High", minval=5, maxval=50, group=grp_stage2)
+
+grp_vcp = "VCP Detection"
+zigzag_pct  = input.float(5.0, "ZigZag Sensitivity (%)", minval=2, maxval=15, step=0.5, group=grp_vcp)
+lookback    = input.int(120, "Lookback Bars",  minval=50, maxval=300, group=grp_vcp)
+max_ratio   = input.float(0.95, "Max Contraction Ratio", minval=0.5, maxval=1.0, step=0.05, group=grp_vcp, tooltip="Each T must be ≤ this × previous T")
+min_t       = input.int(2, "Min Contractions", minval=2, maxval=4, group=grp_vcp)
+max_t       = input.int(6, "Max Contractions", minval=3, maxval=8, group=grp_vcp)
+max_first   = input.float(40, "Max First Contraction (%)", minval=10, maxval=60, group=grp_vcp)
+min_last    = input.float(2, "Min Last Contraction (%)",   minval=0.5, maxval=10, step=0.5, group=grp_vcp)
+pivot_dist  = input.float(8, "Max Distance to Pivot (%)", minval=2, maxval=15, group=grp_vcp)
+recency_bars = input.int(15, "Max Bars Since Last T", minval=5, maxval=30, group=grp_vcp, tooltip="Last contraction must end within this many bars")
+
+grp_vol = "Volume"
+vol_check   = input.bool(true, "Check Volume Decline", group=grp_vol)
+vol_thresh  = input.float(0.8, "Volume Decline Threshold", minval=0.3, maxval=1.0, step=0.05, group=grp_vol)
+
+grp_display = "Display"
+show_sma    = input.bool(true, "Show SMAs", group=grp_display)
+show_swings = input.bool(true, "Show Swing Points", group=grp_display)
+show_table  = input.bool(true, "Show Info Table", group=grp_display)
+show_pivot  = input.bool(true, "Show Pivot Line", group=grp_display)
+
+// ──────────────────────────────────────────────────────────────
+// STAGE 2 CHECK
+// ──────────────────────────────────────────────────────────────
+
+ma50  = ta.sma(close, sma_fast)
+ma150 = ta.sma(close, sma_mid)
+ma200 = ta.sma(close, sma_slow)
+
+price_above_mas = close > ma50 and close > ma150 and close > ma200
+sma_aligned     = ma50 > ma150 and ma150 > ma200
+ma200_rising    = ma200 > ma200[20]
+
+high_252 = ta.highest(high, 252)
+low_252  = ta.lowest(low, 252)
+pct_from_high = (high_252 - close) / high_252 * 100
+pct_above_low = (close - low_252) / low_252 * 100
+
+stage2_pass = price_above_mas and (not require_sma or sma_aligned) and ma200_rising and pct_from_high <= max_from_high and pct_above_low >= 30
+
+// Volume average (global scope — needed for alerts and table)
+vol_50_avg = ta.sma(volume, 50)
+
+// Plot SMAs
+plot(show_sma ? ma50  : na, "SMA 50",  color=color.new(color.yellow, 30), linewidth=1)
+plot(show_sma ? ma150 : na, "SMA 150", color=color.new(color.orange, 30), linewidth=1)
+plot(show_sma ? ma200 : na, "SMA 200", color=color.new(color.red, 30),    linewidth=1)
+
+// ──────────────────────────────────────────────────────────────
+// ZIGZAG SWING DETECTION
+// ──────────────────────────────────────────────────────────────
+
+// Track swing highs and lows using percentage-based ZigZag
+var float zz_last_price = na
+var int   zz_last_type  = 0  // 1 = high, -1 = low
+var int   zz_last_bar   = 0
+
+// Store last N swings for analysis
+var float[] swing_prices = array.new_float(0)
+var int[]   swing_bars   = array.new_int(0)
+var int[]   swing_types  = array.new_int(0)  // 1=H, -1=L
+
+zz_threshold = zigzag_pct / 100
+
+if bar_index == 0
+    zz_last_price := close
+    zz_last_type  := 0
+    zz_last_bar   := 0
+
+if not na(zz_last_price)
+    if zz_last_type == -1 or zz_last_type == 0
+        // Looking for swing high
+        if high >= zz_last_price * (1 + zz_threshold)
+            array.push(swing_prices, high)
+            array.push(swing_bars, bar_index)
+            array.push(swing_types, 1)
+            zz_last_price := high
+            zz_last_type  := 1
+            zz_last_bar   := bar_index
+        else if low < zz_last_price
+            // Update last swing low
+            if array.size(swing_prices) > 0 and array.get(swing_types, array.size(swing_types) - 1) == -1
+                array.set(swing_prices, array.size(swing_prices) - 1, low)
+                array.set(swing_bars, array.size(swing_bars) - 1, bar_index)
+            zz_last_price := low
+            zz_last_bar   := bar_index
+
+    if zz_last_type == 1
+        // Looking for swing low
+        if low <= zz_last_price * (1 - zz_threshold)
+            array.push(swing_prices, low)
+            array.push(swing_bars, bar_index)
+            array.push(swing_types, -1)
+            zz_last_price := low
+            zz_last_type  := -1
+            zz_last_bar   := bar_index
+        else if high > zz_last_price
+            // Update last swing high
+            if array.size(swing_prices) > 0 and array.get(swing_types, array.size(swing_types) - 1) == 1
+                array.set(swing_prices, array.size(swing_prices) - 1, high)
+                array.set(swing_bars, array.size(swing_bars) - 1, bar_index)
+            zz_last_price := high
+            zz_last_bar   := bar_index
+
+// Trim to lookback window
+while array.size(swing_bars) > 0 and array.get(swing_bars, 0) < bar_index - lookback
+    array.shift(swing_prices)
+    array.shift(swing_bars)
+    array.shift(swing_types)
+
+// ──────────────────────────────────────────────────────────────
+// VCP DETECTION
+// ──────────────────────────────────────────────────────────────
+
+var bool  vcp_active = false
+var float vcp_pivot  = na
+var int   vcp_count  = 0
+var string vcp_text  = ""
+var float[] vcp_depths = array.new_float(0)
+
+// Extract contractions (H→L pairs)
+sz = array.size(swing_types)
+
+// Build contraction list
+var float[] c_depths   = array.new_float(0)
+var float[] c_highs    = array.new_float(0)
+var int[]   c_low_bars = array.new_int(0)
+var int[]   c_hi_bars  = array.new_int(0)
+
+array.clear(c_depths)
+array.clear(c_highs)
+array.clear(c_low_bars)
+array.clear(c_hi_bars)
+
+if sz >= 4
+    for i = 0 to sz - 2
+        if array.get(swing_types, i) == 1 and array.get(swing_types, i + 1) == -1
+            sh = array.get(swing_prices, i)
+            sl = array.get(swing_prices, i + 1)
+            if sh > 0
+                depth = (sh - sl) / sh * 100
+                array.push(c_depths, depth)
+                array.push(c_highs, sh)
+                array.push(c_low_bars, array.get(swing_bars, i + 1))
+                array.push(c_hi_bars, array.get(swing_bars, i))
+
+// Find best tightening subsequence ending recently
+nc = array.size(c_depths)
+var float best_score_val = -1.0
+var int   best_start = -1
+var int   best_end   = -1
+
+best_score_val := -1.0
+best_start := -1
+best_end   := -1
+
+vcp_active := false
+vcp_pivot  := na
+vcp_count  := 0
+
+if nc >= min_t and stage2_pass
+    for end_i = nc - 1 to 0
+        if end_i < 0 or end_i >= nc
+            continue
+        // Recency check: last contraction must be recent
+        if array.get(c_low_bars, end_i) < bar_index - recency_bars
+            continue
+
+        s_lo = math.max(0, end_i - max_t + 1)
+        s_hi = math.max(0, end_i - min_t + 1)
+        if s_lo > s_hi
+            continue
+
+        for start_i = s_lo to s_hi
+            n_sub = end_i - start_i + 1
+            if n_sub < min_t
+                continue
+
+            // Check first/last contraction limits
+            first_d = array.get(c_depths, start_i)
+            last_d  = array.get(c_depths, end_i)
+            if first_d > max_first or last_d < min_last
+                continue
+
+            // Check tightening
+            is_tight = true
+            if start_i + 1 <= end_i
+                for j = start_i + 1 to end_i
+                    if j >= nc
+                        break
+                    if array.get(c_depths, j) > array.get(c_depths, j - 1) * max_ratio
+                        is_tight := false
+                        break
+            if not is_tight
+                continue
+
+            // Check no bigger contraction exists after this sequence
+            broken = false
+            if end_i + 1 <= nc - 1
+                for later = end_i + 1 to nc - 1
+                    if later >= nc
+                        break
+                    if array.get(c_depths, later) > first_d * 1.1
+                        broken := true
+                        break
+            if broken
+                continue
+
+            // Pivot = highest high in the subsequence
+            piv = array.get(c_highs, start_i)
+            if start_i + 1 <= end_i
+                for k = start_i + 1 to end_i
+                    if k >= nc
+                        break
+                    piv := math.max(piv, array.get(c_highs, k))
+
+            // Check if already broke out past pivot
+            if close > piv * 1.03
+                continue
+
+            // Distance check
+            dist = (piv - close) / piv * 100
+            if dist > pivot_dist or dist < -3
+                continue
+
+            // Score
+            avg_ratio = 0.0
+            if start_i + 1 <= end_i
+                for j = start_i + 1 to end_i
+                    if j >= nc
+                        break
+                    avg_ratio += array.get(c_depths, j) / array.get(c_depths, j - 1)
+                avg_ratio /= (end_i - start_i)
+            quality = 1 - avg_ratio
+            proximity = 1 - math.abs(dist) / pivot_dist
+            sc = n_sub * 15 + quality * 30 + proximity * 25
+
+            if sc > best_score_val
+                best_score_val := sc
+                best_start := start_i
+                best_end   := end_i
+
+    // If we found a valid VCP
+    if best_start >= 0 and best_end >= 0
+        // Volume decline check — compare recent vol avg vs earlier in pattern
+        vol_ok = true
+        if vol_check
+            // Simple approach: compare volume now vs 50-day avg
+            // If current volume is drying up relative to avg, that's bullish for VCP
+            if not na(vol_50_avg) and vol_50_avg > 0
+                recent_vol = ta.sma(volume, 10)
+                if not na(recent_vol)
+                    vol_ok := (recent_vol / vol_50_avg) < vol_thresh
+
+        if vol_ok or not vol_check
+            vcp_active := true
+            // Pivot = highest high
+            vcp_pivot := array.get(c_highs, best_start)
+            if best_start + 1 <= best_end
+                for k = best_start + 1 to best_end
+                    if k >= nc
+                        break
+                    vcp_pivot := math.max(vcp_pivot, array.get(c_highs, k))
+            vcp_count := best_end - best_start + 1
+
+            // Store depths for display
+            array.clear(vcp_depths)
+            for k = best_start to best_end
+                if k >= nc
+                    break
+                array.push(vcp_depths, array.get(c_depths, k))
+
+// ──────────────────────────────────────────────────────────────
+// DRAWING
+// ──────────────────────────────────────────────────────────────
+
+// Pivot line
+var line pivot_line = na
+if show_pivot
+    if not na(pivot_line)
+        line.delete(pivot_line)
+    if vcp_active and not na(vcp_pivot)
+        pivot_line := line.new(bar_index - 30, vcp_pivot, bar_index + 5, vcp_pivot,
+             color=color.new(color.aqua, 20), style=line.style_dashed, width=2)
+
+// VCP label on current bar
+var label vcp_label = na
+if not na(vcp_label)
+    label.delete(vcp_label)
+
+if vcp_active
+    // Build contraction text
+    depth_str = ""
+    for i = 0 to array.size(vcp_depths) - 1
+        if i > 0
+            depth_str += "→"
+        depth_str += str.tostring(array.get(vcp_depths, i), "#.#") + "%"
+
+    dist_to_pivot = (vcp_pivot - close) / vcp_pivot * 100
+    lbl_text = "VCP " + str.tostring(vcp_count) + "T\n" + depth_str + "\nPivot: " + str.tostring(vcp_pivot, "#.##") + "\n" + str.tostring(dist_to_pivot, "#.#") + "% away"
+
+    lbl_color = dist_to_pivot <= 3 ? color.green : dist_to_pivot <= 5 ? color.yellow : color.orange
+
+    vcp_label := label.new(bar_index, low * 0.98, lbl_text,
+         style=label.style_label_up, color=lbl_color,
+         textcolor=color.white, size=size.normal)
+
+// Show swing points (only on last bar to avoid label overflow)
+if show_swings and sz > 0 and barstate.islast
+    start_idx = math.max(0, sz - 10)
+    for i = start_idx to sz - 1
+        sw_bar  = array.get(swing_bars, i)
+        sw_price = array.get(swing_prices, i)
+        sw_type  = array.get(swing_types, i)
+        if sw_bar >= bar_index - lookback
+            if sw_type == 1
+                label.new(sw_bar, sw_price, "▼",
+                     style=label.style_none, textcolor=color.new(color.orange, 40), size=size.small)
+            else
+                label.new(sw_bar, sw_price, "▲",
+                     style=label.style_none, textcolor=color.new(color.orange, 40), size=size.small)
+
+// ──────────────────────────────────────────────────────────────
+// INFO TABLE
+// ──────────────────────────────────────────────────────────────
+
+var table info = table.new(position.top_right, 2, 8,
+     bgcolor=color.new(color.black, 20), border_width=1, border_color=color.new(color.gray, 60))
+
+if show_table and barstate.islast
+    // Stage 2 status
+    s2_color = stage2_pass ? color.green : color.red
+    s2_text  = stage2_pass ? "✓ PASS" : "✗ FAIL"
+    table.cell(info, 0, 0, "Stage 2",  text_color=color.gray, text_size=size.small)
+    table.cell(info, 1, 0, s2_text,    text_color=s2_color,    text_size=size.small)
+
+    // SMA values
+    table.cell(info, 0, 1, "SMA 50/150/200", text_color=color.gray, text_size=size.small)
+    table.cell(info, 1, 1, str.tostring(ma50, "#") + " / " + str.tostring(ma150, "#") + " / " + str.tostring(ma200, "#"),
+         text_color=sma_aligned ? color.green : color.orange, text_size=size.small)
+
+    // % from 52W high
+    table.cell(info, 0, 2, "From 52W High", text_color=color.gray, text_size=size.small)
+    table.cell(info, 1, 2, str.tostring(pct_from_high, "#.#") + "%",
+         text_color=pct_from_high < 10 ? color.green : color.orange, text_size=size.small)
+
+    // VCP status
+    vcp_color = vcp_active ? color.green : color.gray
+    vcp_status = vcp_active ? "✓ " + str.tostring(vcp_count) + "T ACTIVE" : "—"
+    table.cell(info, 0, 3, "VCP",       text_color=color.gray, text_size=size.small)
+    table.cell(info, 1, 3, vcp_status,  text_color=vcp_color,  text_size=size.small)
+
+    // Contractions
+    if vcp_active and array.size(vcp_depths) > 0
+        d_str = ""
+        for i = 0 to array.size(vcp_depths) - 1
+            if i > 0
+                d_str += " → "
+            d_str += str.tostring(array.get(vcp_depths, i), "#.#") + "%"
+        table.cell(info, 0, 4, "Contractions", text_color=color.gray, text_size=size.small)
+        table.cell(info, 1, 4, d_str,          text_color=color.white, text_size=size.small)
+
+        // Pivot
+        table.cell(info, 0, 5, "Pivot",        text_color=color.gray, text_size=size.small)
+        table.cell(info, 1, 5, str.tostring(vcp_pivot, "#.##"),
+             text_color=color.aqua, text_size=size.small)
+
+        // Distance
+        dist = (vcp_pivot - close) / vcp_pivot * 100
+        d_color = dist <= 3 ? color.green : dist <= 5 ? color.yellow : color.orange
+        table.cell(info, 0, 6, "Distance",     text_color=color.gray, text_size=size.small)
+        table.cell(info, 1, 6, str.tostring(dist, "#.#") + "% away",
+             text_color=d_color, text_size=size.small)
+    else
+        table.cell(info, 0, 4, "Contractions", text_color=color.gray, text_size=size.small)
+        table.cell(info, 1, 4, "—",            text_color=color.gray, text_size=size.small)
+        table.cell(info, 0, 5, "Pivot",        text_color=color.gray, text_size=size.small)
+        table.cell(info, 1, 5, "—",            text_color=color.gray, text_size=size.small)
+        table.cell(info, 0, 6, "Distance",     text_color=color.gray, text_size=size.small)
+        table.cell(info, 1, 6, "—",            text_color=color.gray, text_size=size.small)
+
+    // Volume
+    vol_ratio_tbl = volume / vol_50_avg
+    table.cell(info, 0, 7, "Vol vs 50d Avg", text_color=color.gray, text_size=size.small)
+    table.cell(info, 1, 7, str.tostring(vol_ratio_tbl, "#.#") + "x",
+         text_color=vol_ratio_tbl > 1.5 ? color.green : color.white, text_size=size.small)
+
+// ──────────────────────────────────────────────────────────────
+// ALERTS
+// ──────────────────────────────────────────────────────────────
+
+// Alert when VCP first appears
+vcp_new = vcp_active and not vcp_active[1]
+alertcondition(vcp_new, "VCP Detected",
+     "VCP pattern detected! {{ticker}} — {{close}}")
+
+// Alert when price crosses pivot
+pivot_break = vcp_active and not na(vcp_pivot) and ta.crossover(close, vcp_pivot)
+alertcondition(pivot_break, "Pivot Breakout",
+     "BREAKOUT! {{ticker}} crossed pivot at {{close}}")
+
+// Alert when price crosses pivot on high volume
+pivot_vol_break = pivot_break and volume > vol_50_avg * 1.5
+alertcondition(pivot_vol_break, "Pivot Breakout + Volume",
+     "CONFIRMED BREAKOUT! {{ticker}} at {{close}} on high volume")
+
+// Background color when VCP is active
+bgcolor(vcp_active ? color.new(color.green, 95) : na)
