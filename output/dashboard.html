@@ -86,6 +86,33 @@ body {
 .kv .k { color: var(--text-dim); }
 .kv .v { font-family: 'JetBrains Mono', monospace; font-weight: 500; }
 
+/* Nav */
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.nav-logo { font-weight: 700; font-size: 15px; color: var(--text); text-decoration: none; }
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 4px; }
+.nav-links a {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.15s;
+}
+.nav-links a:hover { color: var(--text); background: var(--surface2); }
+.nav-links a.active { color: var(--accent); background: var(--accent-dim); }
+
 
 .header {
     padding: 20px 24px;
@@ -283,9 +310,17 @@ tr.sel { background: var(--accent-dim); }
 </head>
 <body>
 
+<nav class="nav">
+    <a href="index.html" class="nav-logo">VCP <span>Scanner</span></a>
+    <div class="nav-links">
+        <a href="action.html">Action Board</a>
+        <a href="dashboard.html" class="active">Dashboard</a>
+    </div>
+</nav>
+
 <div class="header">
     <div class="logo">VCP <span>Scanner</span></div>
-    <div class="meta">14 Apr 2026, 01:20 AM &middot; 18 setups &middot; 10s</div>
+    <div class="meta">14 Apr 2026, 01:42 AM &middot; 18 setups &middot; 6s</div>
 </div>
 
 <div class="stats">
