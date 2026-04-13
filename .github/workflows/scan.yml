@@ -2,8 +2,8 @@ name: VCP Scanner
 
 on:
   schedule:
-    # 4:00 PM IST = 10:30 UTC (weekdays only)
-    - cron: "30 10 * * 1-5"
+    # 8:30 AM IST = 3:00 UTC (weekdays only)
+    - cron: "0 3 * * 1-5"
   workflow_dispatch: # manual trigger button
 
 jobs:
