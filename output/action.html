@@ -5,668 +5,759 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VCP Action Board</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+
+:root {
+    --bg: #111318;
+    --surface: #1a1d24;
+    --surface2: #22262f;
+    --border: #2e333d;
+    --text: #e8e4dc;
+    --text-dim: #8a8780;
+    --text-muted: #5c5a56;
+    --accent: #c9a84c;
+    --accent-dim: #c9a84c18;
+    --positive: #4caf7c;
+    --positive-dim: #4caf7c18;
+    --negative: #d4644a;
+    --negative-dim: #d4644a18;
+    --info: #5b8fd9;
+    --info-dim: #5b8fd918;
+    --warn: #d4a04a;
+    --warn-dim: #d4a04a18;
+    --radius: 10px;
+    --radius-sm: 6px;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-    background: #0a0a0f;
-    color: #e8e8f0;
-    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     min-height: 100vh;
-    padding: 32px;
-    max-width: 800px;
-    margin: 0 auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+.t-display { font-weight: 700; font-size: 28px; letter-spacing: -0.5px; color: var(--text); }
+.t-heading { font-weight: 600; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-dim); }
+.t-mono { font-family: 'JetBrains Mono', 'SF Mono', monospace; }
+.t-dim { color: var(--text-dim); }
+.t-muted { color: var(--text-muted); }
+
+/* Utility */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* Components */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.pill {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+.pill-positive { background: var(--positive-dim); color: var(--positive); }
+.pill-negative { background: var(--negative-dim); color: var(--negative); }
+.pill-warn { background: var(--warn-dim); color: var(--warn); }
+.pill-info { background: var(--info-dim); color: var(--info); }
+.pill-accent { background: var(--accent-dim); color: var(--accent); }
+
+.kv { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.kv:last-child { border-bottom: none; }
+.kv .k { color: var(--text-dim); }
+.kv .v { font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+
+
+body { padding: 0; }
+.wrap { max-width: 720px; margin: 0 auto; padding: 24px 20px; }
+
+.ab-header {
+    margin-bottom: 28px;
+}
+.ab-title {
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: -0.3px;
+}
+.ab-title span { color: var(--accent); }
+.ab-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 6px;
+}
+
+.ab-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+}
+.ab-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    text-align: center;
+}
+.ab-stat .label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 600; }
+.ab-stat .num { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; margin-top: 2px; }
+
+.section { margin-bottom: 32px; }
+.section-title { font-weight: 700; font-size: 20px; letter-spacing: -0.3px; margin-bottom: 6px; }
+.section-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; }
+
+.empty-state {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 40px;
+    text-align: center;
+    margin-bottom: 28px;
+}
+.empty-title { font-weight: 700; font-size: 18px; color: var(--text-dim); }
+.empty-sub { color: var(--text-muted); font-size: 13px; margin-top: 6px; }
+
+.tc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid;
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 14px;
+}
+
+.tc-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+.tc-sym { font-weight: 700; font-size: 22px; letter-spacing: -0.3px; }
+.tc-status { font-weight: 700; font-size: 16px; }
+.tc-meta { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+.tc-grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.tc-box {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    text-align: center;
+}
+.tc-box.sm { padding: 8px; }
+.tc-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+.tc-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 2px;
+    color: var(--text);
+}
+.tc-val.sm { font-size: 14px; }
+.tc-sub { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+
+.tc-info {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+}
+
+.tc-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.check {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+.check.ok { background: var(--positive-dim); color: var(--positive); }
+.check.ok::before { content: "✓ "; }
+.check.no { background: var(--negative-dim); color: var(--negative); }
+.check.no::before { content: "✗ "; }
+
+.tc-exits { margin-top: 4px; }
+
+.tv-link {
+    color: var(--info);
+    font-size: 12px;
+    text-decoration: none;
+    font-weight: 500;
+}
+.tv-link:hover { text-decoration: underline; }
+
+.footer-note {
+    text-align: center;
+    padding: 32px 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+}
+.footer-note a { color: var(--info); text-decoration: none; }
+
+@media (max-width: 500px) {
+    .wrap { padding: 16px 14px; }
+    .tc { padding: 16px; }
+    .tc-sym { font-size: 18px; }
+    .tc-val { font-size: 15px; }
+    .tc-val.sm { font-size: 12px; }
+    .tc-grid3 { gap: 6px; }
+    .tc-box { padding: 10px 6px; }
+    .ab-stats { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .ab-stat { padding: 10px 8px; }
+    .ab-stat .num { font-size: 16px; }
+    .check { font-size: 10px; padding: 2px 6px; }
 }
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<div style="margin-bottom:32px">
-    <h1 style="font-family:'Bebas Neue';font-size:42px;color:#00e676;letter-spacing:3px">VCP ACTION BOARD</h1>
-    <div style="font-family:'JetBrains Mono';font-size:12px;color:#8888a0;margin-top:4px">
-        13 Apr 2026, 11:24 PM · 18 scanned · 1 green · 9 yellow · 8 red · 9s
-    </div>
+<div class="ab-header">
+    <div class="ab-title">VCP <span>Action Board</span></div>
+    <div class="ab-meta">14 Apr 2026, 01:20 AM · 18 scanned · 10s</div>
 </div>
 
-<div style="display:flex;gap:12px;margin-bottom:32px;flex-wrap:wrap">
-    <div style="background:#12121a;border:1px solid #2a2a3a;border-radius:10px;padding:16px 20px;flex:1;min-width:120px">
-        <div style="font-size:10px;color:#8888a0;text-transform:uppercase;letter-spacing:1.5px">Portfolio</div>
-        <div style="font-family:'Bebas Neue';font-size:28px;color:#e8e8f0">₹1,000,000</div>
-    </div>
-    <div style="background:#12121a;border:1px solid #2a2a3a;border-radius:10px;padding:16px 20px;flex:1;min-width:120px">
-        <div style="font-size:10px;color:#8888a0;text-transform:uppercase;letter-spacing:1.5px">Risk/Trade</div>
-        <div style="font-family:'Bebas Neue';font-size:28px;color:#e8e8f0">1% (₹10,000)</div>
-    </div>
-    <div style="background:#12121a;border:1px solid #2a2a3a;border-radius:10px;padding:16px 20px;flex:1;min-width:120px">
-        <div style="font-size:10px;color:#8888a0;text-transform:uppercase;letter-spacing:1.5px">Stop Loss</div>
-        <div style="font-family:'Bebas Neue';font-size:28px;color:#ff5252">7%</div>
-    </div>
+<div class="ab-stats">
+    <div class="ab-stat"><div class="label">Portfolio</div><div class="num">₹10L</div></div>
+    <div class="ab-stat"><div class="label">Risk/Trade</div><div class="num">₹10,000</div></div>
+    <div class="ab-stat"><div class="label">Stop Loss</div><div class="num" style="color:var(--negative)">7%</div></div>
 </div>
 
 
-        <div style="margin-bottom:32px">
-            <h2 style="font-family:'Bebas Neue';font-size:28px;color:#00e676;letter-spacing:2px;margin-bottom:16px">
-                BUY — 1 setups ready
-            </h2>
-            <p style="font-size:13px;color:#8888a0;margin-bottom:20px">
-                All 6 entry conditions met. Set alerts at pivot, buy on volume confirmation.
-            </p>
+        <div class="section">
+            <h2 class="section-title" style="color:var(--positive)">BUY — 1 ready</h2>
+            <p class="section-sub">All 6 entry conditions met. Set alerts at pivot, buy on volume confirmation.</p>
             
-        <div style="background:#12121a;border:2px solid #00e676;border-radius:14px;padding:24px;margin-bottom:16px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div class="tc" style="border-color:var(--positive)">
+            <div class="tc-head">
                 <div>
-                    <span style="font-family:'Bebas Neue';font-size:32px;color:#00e676;letter-spacing:1px">INDIANB</span>
-                    <span style="font-size:13px;color:#8888a0;margin-left:12px">Financial Services · Large Cap</span>
+                    <div class="tc-sym" style="color:var(--positive)">INDIANB</div>
+                    <div class="tc-meta">Financial Services · Large Cap</div>
                 </div>
-                <div style="text-align:right">
-                    <div style="font-family:'Bebas Neue';font-size:24px;color:#00e676">GREEN</div>
-                    <div style="font-size:12px;color:#8888a0">Score 52 · RS 83</div>
-                </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Entry</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#00e676;margin-top:4px">₹1,000</div>
-                    <div style="font-size:11px;color:#8888a0">3.4% away</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Stop Loss</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#ff5252;margin-top:4px">₹930</div>
-                    <div style="font-size:11px;color:#8888a0">-7%</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Position</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#e8e8f0;margin-top:4px">142 sh</div>
-                    <div style="font-size:11px;color:#8888a0">₹142,000 (14.2%)</div>
+                <div class="text-right">
+                    <div class="tc-status" style="color:var(--positive)">GREEN</div>
+                    <div class="tc-meta">Score 52 · RS 83</div>
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 1R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹1,070</div>
+            <div class="tc-grid3">
+                <div class="tc-box">
+                    <div class="tc-label">ENTRY</div>
+                    <div class="tc-val" style="color:var(--positive)">₹1,000</div>
+                    <div class="tc-sub">3.4% away</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 2R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹1,140</div>
+                <div class="tc-box">
+                    <div class="tc-label">STOP</div>
+                    <div class="tc-val" style="color:var(--negative)">₹930</div>
+                    <div class="tc-sub">-7%</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 3R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#00e676">₹1,210</div>
+                <div class="tc-box">
+                    <div class="tc-label">POSITION</div>
+                    <div class="tc-val">142 sh</div>
+                    <div class="tc-sub">₹142,000</div>
                 </div>
             </div>
 
-            <div style="background:#1a1a26;border-radius:8px;padding:14px;margin-bottom:12px">
-                <div style="font-size:12px;color:#8888a0;margin-bottom:8px">VCP: <span style="color:#e8e8f0;font-family:'JetBrains Mono'">12.1% → 9.4% → 7.1% (3T)</span> · Earnings: <span style="color:#e8e8f0">17d</span> · Rev: <span style="color:#e8e8f0">14%</span> · EPS: <span style="color:#e8e8f0">8%</span> · ROE: <span style="color:#e8e8f0">16%</span></div>
-                <div style="font-size:12px;color:#8888a0;margin-bottom:4px">Financial Services (↑6.6% vs Nifty)</div>
-                <div style="font-size:12px;color:#8888a0">Delivery: <span style="color:#ff5252">29.79%</span> (avg 39.4%) · Inst: <span style="color:#ffab00">17.0%</span></div>
+            <div class="tc-grid3 targets">
+                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹1,070</div></div>
+                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹1,140</div></div>
+                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹1,210</div></div>
             </div>
 
-            <div style="margin-bottom:8px;font-size:13px"><span style="color:#00e676;margin-right:12px">✓ Near Pivot</span><span style="color:#00e676;margin-right:12px">✓ RS 83</span><span style="color:#00e676;margin-right:12px">✓ Earnings Clear</span><span style="color:#ff5252;margin-right:12px">✗ Del 29.79%</span><span style="color:#00e676;margin-right:12px">✓ Close 89%</span><span style="color:#00e676;margin-right:12px">✓ Inst 17%</span></div>
+            <div class="tc-info">
+                <div>VCP: <span style="color:var(--text)">12.1% → 9.4% → 7.1% (3T)</span> · Earn: <span style="color:var(--text)">16d</span> · Rev: <span style="color:var(--text)">14%</span> · EPS: <span style="color:var(--text)">8%</span> · ROE: <span style="color:var(--text)">16%</span></div>
+                <div>Del: <span style="color:var(--negative)">29.79%</span> (avg 39.4%) · Inst: <span style="color:var(--warn)">17.0%</span></div>
+            </div>
 
-            <div><div style="color:#00e676;font-size:13px">No exit signals</div></div>
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check ok">RS 83</span><span class="check ok">Earnings</span><span class="check no">Del 29.79%</span><span class="check ok">Close 89%</span><span class="check ok">Inst 17%</span></div>
+            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
-            <div style="margin-top:12px;text-align:right">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AINDIANB" target="_blank"
-                   style="color:#448aff;font-size:12px;text-decoration:none">Open Chart →</a>
+            <div class="text-right" style="margin-top:10px">
+                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AINDIANB" target="_blank" class="tv-link">TradingView →</a>
             </div>
         </div>
         </div>
 
-        <div style="margin-bottom:32px">
-            <h2 style="font-family:'Bebas Neue';font-size:28px;color:#ffab00;letter-spacing:2px;margin-bottom:16px">
-                WATCH — 9 setups forming
-            </h2>
-            <p style="font-size:13px;color:#8888a0;margin-bottom:20px">
-                4-5 conditions met. Set price alerts — these could turn GREEN in 1-3 days.
-            </p>
+        <div class="section">
+            <h2 class="section-title" style="color:var(--warn)">WATCH — 9 forming</h2>
+            <p class="section-sub">4-5 conditions met. Set price alerts — these could turn GREEN in 1-3 days.</p>
             
-        <div style="background:#12121a;border:2px solid #ffab00;border-radius:14px;padding:24px;margin-bottom:16px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div class="tc" style="border-color:var(--warn)">
+            <div class="tc-head">
                 <div>
-                    <span style="font-family:'Bebas Neue';font-size:32px;color:#ffab00;letter-spacing:1px">MCX</span>
-                    <span style="font-size:13px;color:#8888a0;margin-left:12px">Financial Services · Large Cap</span>
+                    <div class="tc-sym" style="color:var(--warn)">MCX</div>
+                    <div class="tc-meta">Financial Services · Large Cap</div>
                 </div>
-                <div style="text-align:right">
-                    <div style="font-family:'Bebas Neue';font-size:24px;color:#ffab00">YELLOW</div>
-                    <div style="font-size:12px;color:#8888a0">Score 68 · RS 100</div>
-                </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Entry</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#00e676;margin-top:4px">₹2,703</div>
-                    <div style="font-size:11px;color:#8888a0">-2.3% away</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Stop Loss</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#ff5252;margin-top:4px">₹2,514</div>
-                    <div style="font-size:11px;color:#8888a0">-7%</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Position</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#e8e8f0;margin-top:4px">52 sh</div>
-                    <div style="font-size:11px;color:#8888a0">₹140,540 (14.1%)</div>
+                <div class="text-right">
+                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
+                    <div class="tc-meta">Score 68 · RS 100</div>
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 1R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹2,892</div>
+            <div class="tc-grid3">
+                <div class="tc-box">
+                    <div class="tc-label">ENTRY</div>
+                    <div class="tc-val" style="color:var(--positive)">₹2,703</div>
+                    <div class="tc-sub">-2.3% away</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 2R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹3,081</div>
+                <div class="tc-box">
+                    <div class="tc-label">STOP</div>
+                    <div class="tc-val" style="color:var(--negative)">₹2,514</div>
+                    <div class="tc-sub">-7%</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 3R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#00e676">₹3,270</div>
+                <div class="tc-box">
+                    <div class="tc-label">POSITION</div>
+                    <div class="tc-val">52 sh</div>
+                    <div class="tc-sub">₹140,540</div>
                 </div>
             </div>
 
-            <div style="background:#1a1a26;border-radius:8px;padding:14px;margin-bottom:12px">
-                <div style="font-size:12px;color:#8888a0;margin-bottom:8px">VCP: <span style="color:#e8e8f0;font-family:'JetBrains Mono'">16.4% → 6.1% (2T)</span> · Earnings: <span style="color:#e8e8f0">24d</span> · Rev: <span style="color:#e8e8f0">115%</span> · EPS: <span style="color:#e8e8f0">151%</span> · ROE: <span style="color:#e8e8f0">30%</span></div>
-                <div style="font-size:12px;color:#8888a0;margin-bottom:4px">Financial Services (↑6.6% vs Nifty)</div>
-                <div style="font-size:12px;color:#8888a0">Delivery: <span style="color:#ff5252">37.37%</span> (avg 40.4%) · Inst: <span style="color:#00e676">51.5%</span></div>
+            <div class="tc-grid3 targets">
+                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹2,892</div></div>
+                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹3,081</div></div>
+                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹3,270</div></div>
             </div>
 
-            <div style="margin-bottom:8px;font-size:13px"><span style="color:#ff5252;margin-right:12px">✗ Near Pivot</span><span style="color:#00e676;margin-right:12px">✓ RS 100</span><span style="color:#00e676;margin-right:12px">✓ Earnings Clear</span><span style="color:#ff5252;margin-right:12px">✗ Del 37.37%</span><span style="color:#00e676;margin-right:12px">✓ Close 93%</span><span style="color:#00e676;margin-right:12px">✓ Inst 52%</span></div>
+            <div class="tc-info">
+                <div>VCP: <span style="color:var(--text)">16.4% → 6.1% (2T)</span> · Earn: <span style="color:var(--text)">23d</span> · Rev: <span style="color:var(--text)">115%</span> · EPS: <span style="color:var(--text)">151%</span> · ROE: <span style="color:var(--text)">30%</span></div>
+                <div>Del: <span style="color:var(--negative)">37.37%</span> (avg 40.4%) · Inst: <span style="color:var(--positive)">51.5%</span></div>
+            </div>
 
-            <div><div style="color:#00e676;font-size:13px">No exit signals</div></div>
+            <div class="tc-checks"><span class="check no">Near Pivot</span><span class="check ok">RS 100</span><span class="check ok">Earnings</span><span class="check no">Del 37.37%</span><span class="check ok">Close 93%</span><span class="check ok">Inst 52%</span></div>
+            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
-            <div style="margin-top:12px;text-align:right">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AMCX" target="_blank"
-                   style="color:#448aff;font-size:12px;text-decoration:none">Open Chart →</a>
+            <div class="text-right" style="margin-top:10px">
+                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AMCX" target="_blank" class="tv-link">TradingView →</a>
             </div>
         </div>
-        <div style="background:#12121a;border:2px solid #ffab00;border-radius:14px;padding:24px;margin-bottom:16px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div class="tc" style="border-color:var(--warn)">
+            <div class="tc-head">
                 <div>
-                    <span style="font-family:'Bebas Neue';font-size:32px;color:#ffab00;letter-spacing:1px">ONGC</span>
-                    <span style="font-size:13px;color:#8888a0;margin-left:12px">Energy · Large Cap</span>
+                    <div class="tc-sym" style="color:var(--warn)">ONGC</div>
+                    <div class="tc-meta">Energy · Large Cap</div>
                 </div>
-                <div style="text-align:right">
-                    <div style="font-family:'Bebas Neue';font-size:24px;color:#ffab00">YELLOW</div>
-                    <div style="font-size:12px;color:#8888a0">Score 62 · RS 72</div>
-                </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Entry</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#00e676;margin-top:4px">₹293</div>
-                    <div style="font-size:11px;color:#8888a0">1.9% away</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Stop Loss</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#ff5252;margin-top:4px">₹272</div>
-                    <div style="font-size:11px;color:#8888a0">-7%</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Position</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#e8e8f0;margin-top:4px">487 sh</div>
-                    <div style="font-size:11px;color:#8888a0">₹142,691 (14.3%)</div>
+                <div class="text-right">
+                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
+                    <div class="tc-meta">Score 62 · RS 72</div>
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 1R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹314</div>
+            <div class="tc-grid3">
+                <div class="tc-box">
+                    <div class="tc-label">ENTRY</div>
+                    <div class="tc-val" style="color:var(--positive)">₹293</div>
+                    <div class="tc-sub">1.9% away</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 2R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹334</div>
+                <div class="tc-box">
+                    <div class="tc-label">STOP</div>
+                    <div class="tc-val" style="color:var(--negative)">₹272</div>
+                    <div class="tc-sub">-7%</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 3R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#00e676">₹355</div>
+                <div class="tc-box">
+                    <div class="tc-label">POSITION</div>
+                    <div class="tc-val">487 sh</div>
+                    <div class="tc-sub">₹142,691</div>
                 </div>
             </div>
 
-            <div style="background:#1a1a26;border-radius:8px;padding:14px;margin-bottom:12px">
-                <div style="font-size:12px;color:#8888a0;margin-bottom:8px">VCP: <span style="color:#e8e8f0;font-family:'JetBrains Mono'">10.6% → 6.2% (2T)</span> · Earnings: <span style="color:#e8e8f0">?</span> · Rev: <span style="color:#e8e8f0">1%</span> · EPS: <span style="color:#e8e8f0">16%</span> · ROE: <span style="color:#e8e8f0">11%</span></div>
-                <div style="font-size:12px;color:#8888a0;margin-bottom:4px">Energy (↑4.2% vs Nifty)</div>
-                <div style="font-size:12px;color:#8888a0">Delivery: <span style="color:#ff5252">23.66%</span> (avg 45.0%) · Inst: <span style="color:#ffab00">22.9%</span></div>
+            <div class="tc-grid3 targets">
+                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹314</div></div>
+                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹334</div></div>
+                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹355</div></div>
             </div>
 
-            <div style="margin-bottom:8px;font-size:13px"><span style="color:#00e676;margin-right:12px">✓ Near Pivot</span><span style="color:#00e676;margin-right:12px">✓ RS 72</span><span style="color:#00e676;margin-right:12px">✓ Earnings Clear</span><span style="color:#ff5252;margin-right:12px">✗ Del 23.66%</span><span style="color:#ff5252;margin-right:12px">✗ Close 70%</span><span style="color:#00e676;margin-right:12px">✓ Inst 23%</span></div>
+            <div class="tc-info">
+                <div>VCP: <span style="color:var(--text)">10.6% → 6.2% (2T)</span> · Earn: <span style="color:var(--text)">?</span> · Rev: <span style="color:var(--text)">1%</span> · EPS: <span style="color:var(--text)">16%</span> · ROE: <span style="color:var(--text)">11%</span></div>
+                <div>Del: <span style="color:var(--negative)">23.66%</span> (avg 45.0%) · Inst: <span style="color:var(--warn)">22.9%</span></div>
+            </div>
 
-            <div><div style="color:#00e676;font-size:13px">No exit signals</div></div>
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check ok">RS 72</span><span class="check ok">Earnings</span><span class="check no">Del 23.66%</span><span class="check no">Close 70%</span><span class="check ok">Inst 23%</span></div>
+            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
-            <div style="margin-top:12px;text-align:right">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AONGC" target="_blank"
-                   style="color:#448aff;font-size:12px;text-decoration:none">Open Chart →</a>
+            <div class="text-right" style="margin-top:10px">
+                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AONGC" target="_blank" class="tv-link">TradingView →</a>
             </div>
         </div>
-        <div style="background:#12121a;border:2px solid #ffab00;border-radius:14px;padding:24px;margin-bottom:16px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div class="tc" style="border-color:var(--warn)">
+            <div class="tc-head">
                 <div>
-                    <span style="font-family:'Bebas Neue';font-size:32px;color:#ffab00;letter-spacing:1px">BHARATFORG</span>
-                    <span style="font-size:13px;color:#8888a0;margin-left:12px">Consumer Cyclical · Large Cap</span>
+                    <div class="tc-sym" style="color:var(--warn)">BHARATFORG</div>
+                    <div class="tc-meta">Consumer Cyclical · Large Cap</div>
                 </div>
-                <div style="text-align:right">
-                    <div style="font-family:'Bebas Neue';font-size:24px;color:#ffab00">YELLOW</div>
-                    <div style="font-size:12px;color:#8888a0">Score 56 · RS 89</div>
-                </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Entry</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#00e676;margin-top:4px">₹1,812</div>
-                    <div style="font-size:11px;color:#8888a0">0.6% away</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Stop Loss</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#ff5252;margin-top:4px">₹1,685</div>
-                    <div style="font-size:11px;color:#8888a0">-7%</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Position</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#e8e8f0;margin-top:4px">78 sh</div>
-                    <div style="font-size:11px;color:#8888a0">₹141,336 (14.1%)</div>
+                <div class="text-right">
+                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
+                    <div class="tc-meta">Score 56 · RS 89</div>
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 1R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹1,939</div>
+            <div class="tc-grid3">
+                <div class="tc-box">
+                    <div class="tc-label">ENTRY</div>
+                    <div class="tc-val" style="color:var(--positive)">₹1,812</div>
+                    <div class="tc-sub">0.6% away</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 2R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹2,066</div>
+                <div class="tc-box">
+                    <div class="tc-label">STOP</div>
+                    <div class="tc-val" style="color:var(--negative)">₹1,685</div>
+                    <div class="tc-sub">-7%</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 3R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#00e676">₹2,193</div>
+                <div class="tc-box">
+                    <div class="tc-label">POSITION</div>
+                    <div class="tc-val">78 sh</div>
+                    <div class="tc-sub">₹141,336</div>
                 </div>
             </div>
 
-            <div style="background:#1a1a26;border-radius:8px;padding:14px;margin-bottom:12px">
-                <div style="font-size:12px;color:#8888a0;margin-bottom:8px">VCP: <span style="color:#e8e8f0;font-family:'JetBrains Mono'">9.8% → 8.1% (2T)</span> · Earnings: <span style="color:#e8e8f0">24d</span> · Rev: <span style="color:#e8e8f0">25%</span> · EPS: <span style="color:#e8e8f0">22%</span> · ROE: <span style="color:#e8e8f0">10%</span></div>
-                <div style="font-size:12px;color:#8888a0;margin-bottom:4px">Consumer Cyclical (↑2.7% vs Nifty)</div>
-                <div style="font-size:12px;color:#8888a0">Delivery: <span style="color:#ff5252">38.47%</span> (avg 44.4%) · Inst: <span style="color:#00e676">38.6%</span></div>
+            <div class="tc-grid3 targets">
+                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹1,939</div></div>
+                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹2,066</div></div>
+                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹2,193</div></div>
             </div>
 
-            <div style="margin-bottom:8px;font-size:13px"><span style="color:#00e676;margin-right:12px">✓ Near Pivot</span><span style="color:#00e676;margin-right:12px">✓ RS 89</span><span style="color:#00e676;margin-right:12px">✓ Earnings Clear</span><span style="color:#ff5252;margin-right:12px">✗ Del 38.47%</span><span style="color:#ff5252;margin-right:12px">✗ Close 75%</span><span style="color:#00e676;margin-right:12px">✓ Inst 39%</span></div>
+            <div class="tc-info">
+                <div>VCP: <span style="color:var(--text)">9.8% → 8.1% (2T)</span> · Earn: <span style="color:var(--text)">23d</span> · Rev: <span style="color:var(--text)">25%</span> · EPS: <span style="color:var(--text)">22%</span> · ROE: <span style="color:var(--text)">10%</span></div>
+                <div>Del: <span style="color:var(--negative)">38.47%</span> (avg 44.4%) · Inst: <span style="color:var(--positive)">38.6%</span></div>
+            </div>
 
-            <div><div style="color:#00e676;font-size:13px">No exit signals</div></div>
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check ok">RS 89</span><span class="check ok">Earnings</span><span class="check no">Del 38.47%</span><span class="check no">Close 75%</span><span class="check ok">Inst 39%</span></div>
+            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
-            <div style="margin-top:12px;text-align:right">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3ABHARATFORG" target="_blank"
-                   style="color:#448aff;font-size:12px;text-decoration:none">Open Chart →</a>
+            <div class="text-right" style="margin-top:10px">
+                <a href="https://www.tradingview.com/chart/?symbol=NSE%3ABHARATFORG" target="_blank" class="tv-link">TradingView →</a>
             </div>
         </div>
-        <div style="background:#12121a;border:2px solid #ffab00;border-radius:14px;padding:24px;margin-bottom:16px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div class="tc" style="border-color:var(--warn)">
+            <div class="tc-head">
                 <div>
-                    <span style="font-family:'Bebas Neue';font-size:32px;color:#ffab00;letter-spacing:1px">ASTRAL</span>
-                    <span style="font-size:13px;color:#8888a0;margin-left:12px">Industrials · Large Cap</span>
+                    <div class="tc-sym" style="color:var(--warn)">ASTRAL</div>
+                    <div class="tc-meta">Industrials · Large Cap</div>
                 </div>
-                <div style="text-align:right">
-                    <div style="font-family:'Bebas Neue';font-size:24px;color:#ffab00">YELLOW</div>
-                    <div style="font-size:12px;color:#8888a0">Score 54 · RS 33</div>
-                </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Entry</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#00e676;margin-top:4px">₹1,678</div>
-                    <div style="font-size:11px;color:#8888a0">3.2% away</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Stop Loss</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#ff5252;margin-top:4px">₹1,561</div>
-                    <div style="font-size:11px;color:#8888a0">-7%</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Position</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#e8e8f0;margin-top:4px">85 sh</div>
-                    <div style="font-size:11px;color:#8888a0">₹142,630 (14.3%)</div>
+                <div class="text-right">
+                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
+                    <div class="tc-meta">Score 54 · RS 33</div>
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 1R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹1,795</div>
+            <div class="tc-grid3">
+                <div class="tc-box">
+                    <div class="tc-label">ENTRY</div>
+                    <div class="tc-val" style="color:var(--positive)">₹1,678</div>
+                    <div class="tc-sub">3.2% away</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 2R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹1,913</div>
+                <div class="tc-box">
+                    <div class="tc-label">STOP</div>
+                    <div class="tc-val" style="color:var(--negative)">₹1,561</div>
+                    <div class="tc-sub">-7%</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 3R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#00e676">₹2,030</div>
+                <div class="tc-box">
+                    <div class="tc-label">POSITION</div>
+                    <div class="tc-val">85 sh</div>
+                    <div class="tc-sub">₹142,630</div>
                 </div>
             </div>
 
-            <div style="background:#1a1a26;border-radius:8px;padding:14px;margin-bottom:12px">
-                <div style="font-size:12px;color:#8888a0;margin-bottom:8px">VCP: <span style="color:#e8e8f0;font-family:'JetBrains Mono'">13.2% → 6.0% (2T)</span> · Earnings: <span style="color:#e8e8f0">?</span> · Rev: <span style="color:#e8e8f0">10%</span> · EPS: <span style="color:#e8e8f0">-6%</span> · ROE: <span style="color:#e8e8f0">14%</span></div>
-                <div style="font-size:12px;color:#8888a0;margin-bottom:4px">Industrials (↑3.1% vs Nifty)</div>
-                <div style="font-size:12px;color:#8888a0">Delivery: <span style="color:#ff5252">35.54%</span> (avg 42.0%) · Inst: <span style="color:#ffab00">26.5%</span></div>
+            <div class="tc-grid3 targets">
+                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹1,795</div></div>
+                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹1,913</div></div>
+                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹2,030</div></div>
             </div>
 
-            <div style="margin-bottom:8px;font-size:13px"><span style="color:#00e676;margin-right:12px">✓ Near Pivot</span><span style="color:#ff5252;margin-right:12px">✗ RS 33</span><span style="color:#00e676;margin-right:12px">✓ Earnings Clear</span><span style="color:#ff5252;margin-right:12px">✗ Del 35.54%</span><span style="color:#00e676;margin-right:12px">✓ Close 75%</span><span style="color:#00e676;margin-right:12px">✓ Inst 26%</span></div>
+            <div class="tc-info">
+                <div>VCP: <span style="color:var(--text)">13.2% → 6.0% (2T)</span> · Earn: <span style="color:var(--text)">?</span> · Rev: <span style="color:var(--text)">10%</span> · EPS: <span style="color:var(--text)">-6%</span> · ROE: <span style="color:var(--text)">14%</span></div>
+                <div>Del: <span style="color:var(--negative)">35.54%</span> (avg 42.0%) · Inst: <span style="color:var(--warn)">26.5%</span></div>
+            </div>
 
-            <div><div style="color:#00e676;font-size:13px">No exit signals</div></div>
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check no">RS 33</span><span class="check ok">Earnings</span><span class="check no">Del 35.54%</span><span class="check ok">Close 75%</span><span class="check ok">Inst 26%</span></div>
+            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
-            <div style="margin-top:12px;text-align:right">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AASTRAL" target="_blank"
-                   style="color:#448aff;font-size:12px;text-decoration:none">Open Chart →</a>
+            <div class="text-right" style="margin-top:10px">
+                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AASTRAL" target="_blank" class="tv-link">TradingView →</a>
             </div>
         </div>
-        <div style="background:#12121a;border:2px solid #ffab00;border-radius:14px;padding:24px;margin-bottom:16px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div class="tc" style="border-color:var(--warn)">
+            <div class="tc-head">
                 <div>
-                    <span style="font-family:'Bebas Neue';font-size:32px;color:#ffab00;letter-spacing:1px">BAJAJ-AUTO</span>
-                    <span style="font-size:13px;color:#8888a0;margin-left:12px">Consumer Cyclical · Large Cap</span>
+                    <div class="tc-sym" style="color:var(--warn)">BAJAJ-AUTO</div>
+                    <div class="tc-meta">Consumer Cyclical · Large Cap</div>
                 </div>
-                <div style="text-align:right">
-                    <div style="font-family:'Bebas Neue';font-size:24px;color:#ffab00">YELLOW</div>
-                    <div style="font-size:12px;color:#8888a0">Score 51 · RS 17</div>
-                </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Entry</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#00e676;margin-top:4px">₹10,187</div>
-                    <div style="font-size:11px;color:#8888a0">3.6% away</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Stop Loss</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#ff5252;margin-top:4px">₹9,474</div>
-                    <div style="font-size:11px;color:#8888a0">-7%</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Position</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#e8e8f0;margin-top:4px">14 sh</div>
-                    <div style="font-size:11px;color:#8888a0">₹142,618 (14.3%)</div>
+                <div class="text-right">
+                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
+                    <div class="tc-meta">Score 51 · RS 17</div>
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 1R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹10,900</div>
+            <div class="tc-grid3">
+                <div class="tc-box">
+                    <div class="tc-label">ENTRY</div>
+                    <div class="tc-val" style="color:var(--positive)">₹10,187</div>
+                    <div class="tc-sub">3.6% away</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 2R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹11,613</div>
+                <div class="tc-box">
+                    <div class="tc-label">STOP</div>
+                    <div class="tc-val" style="color:var(--negative)">₹9,474</div>
+                    <div class="tc-sub">-7%</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 3R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#00e676">₹12,326</div>
+                <div class="tc-box">
+                    <div class="tc-label">POSITION</div>
+                    <div class="tc-val">14 sh</div>
+                    <div class="tc-sub">₹142,618</div>
                 </div>
             </div>
 
-            <div style="background:#1a1a26;border-radius:8px;padding:14px;margin-bottom:12px">
-                <div style="font-size:12px;color:#8888a0;margin-bottom:8px">VCP: <span style="color:#e8e8f0;font-family:'JetBrains Mono'">14.2% → 7.1% (2T)</span> · Earnings: <span style="color:#e8e8f0">23d</span> · Rev: <span style="color:#e8e8f0">23%</span> · EPS: <span style="color:#e8e8f0">25%</span> · ROE: <span style="color:#e8e8f0">21%</span></div>
-                <div style="font-size:12px;color:#8888a0;margin-bottom:4px">Consumer Cyclical (↑2.7% vs Nifty)</div>
-                <div style="font-size:12px;color:#8888a0">Delivery: <span style="color:#ff5252">35.35%</span> (avg 46.1%) · Inst: <span style="color:#ffab00">15.8%</span></div>
+            <div class="tc-grid3 targets">
+                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹10,900</div></div>
+                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹11,613</div></div>
+                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹12,326</div></div>
             </div>
 
-            <div style="margin-bottom:8px;font-size:13px"><span style="color:#00e676;margin-right:12px">✓ Near Pivot</span><span style="color:#ff5252;margin-right:12px">✗ RS 17</span><span style="color:#00e676;margin-right:12px">✓ Earnings Clear</span><span style="color:#ff5252;margin-right:12px">✗ Del 35.35%</span><span style="color:#00e676;margin-right:12px">✓ Close 77%</span><span style="color:#00e676;margin-right:12px">✓ Inst 16%</span></div>
+            <div class="tc-info">
+                <div>VCP: <span style="color:var(--text)">14.2% → 7.1% (2T)</span> · Earn: <span style="color:var(--text)">22d</span> · Rev: <span style="color:var(--text)">23%</span> · EPS: <span style="color:var(--text)">25%</span> · ROE: <span style="color:var(--text)">21%</span></div>
+                <div>Del: <span style="color:var(--negative)">35.35%</span> (avg 46.1%) · Inst: <span style="color:var(--warn)">15.8%</span></div>
+            </div>
 
-            <div><div style="color:#00e676;font-size:13px">No exit signals</div></div>
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check no">RS 17</span><span class="check ok">Earnings</span><span class="check no">Del 35.35%</span><span class="check ok">Close 77%</span><span class="check ok">Inst 16%</span></div>
+            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
-            <div style="margin-top:12px;text-align:right">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3ABAJAJ-AUTO" target="_blank"
-                   style="color:#448aff;font-size:12px;text-decoration:none">Open Chart →</a>
+            <div class="text-right" style="margin-top:10px">
+                <a href="https://www.tradingview.com/chart/?symbol=NSE%3ABAJAJ-AUTO" target="_blank" class="tv-link">TradingView →</a>
             </div>
         </div>
-        <div style="background:#12121a;border:2px solid #ffab00;border-radius:14px;padding:24px;margin-bottom:16px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div class="tc" style="border-color:var(--warn)">
+            <div class="tc-head">
                 <div>
-                    <span style="font-family:'Bebas Neue';font-size:32px;color:#ffab00;letter-spacing:1px">GVT&D</span>
-                    <span style="font-size:13px;color:#8888a0;margin-left:12px">Industrials · Large Cap</span>
+                    <div class="tc-sym" style="color:var(--warn)">GVT&D</div>
+                    <div class="tc-meta">Industrials · Large Cap</div>
                 </div>
-                <div style="text-align:right">
-                    <div style="font-family:'Bebas Neue';font-size:24px;color:#ffab00">YELLOW</div>
-                    <div style="font-size:12px;color:#8888a0">Score 51 · RS 94</div>
-                </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Entry</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#00e676;margin-top:4px">₹4,344</div>
-                    <div style="font-size:11px;color:#8888a0">5.8% away</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Stop Loss</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#ff5252;margin-top:4px">₹4,040</div>
-                    <div style="font-size:11px;color:#8888a0">-7%</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Position</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#e8e8f0;margin-top:4px">32 sh</div>
-                    <div style="font-size:11px;color:#8888a0">₹139,008 (13.9%)</div>
+                <div class="text-right">
+                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
+                    <div class="tc-meta">Score 51 · RS 94</div>
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 1R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹4,648</div>
+            <div class="tc-grid3">
+                <div class="tc-box">
+                    <div class="tc-label">ENTRY</div>
+                    <div class="tc-val" style="color:var(--positive)">₹4,344</div>
+                    <div class="tc-sub">5.8% away</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 2R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹4,952</div>
+                <div class="tc-box">
+                    <div class="tc-label">STOP</div>
+                    <div class="tc-val" style="color:var(--negative)">₹4,040</div>
+                    <div class="tc-sub">-7%</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 3R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#00e676">₹5,256</div>
+                <div class="tc-box">
+                    <div class="tc-label">POSITION</div>
+                    <div class="tc-val">32 sh</div>
+                    <div class="tc-sub">₹139,008</div>
                 </div>
             </div>
 
-            <div style="background:#1a1a26;border-radius:8px;padding:14px;margin-bottom:12px">
-                <div style="font-size:12px;color:#8888a0;margin-bottom:8px">VCP: <span style="color:#e8e8f0;font-family:'JetBrains Mono'">15.4% → 8.7% (2T)</span> · Earnings: <span style="color:#e8e8f0">?</span> · Rev: <span style="color:#e8e8f0">58%</span> · EPS: <span style="color:#e8e8f0">104%</span> · ROE: <span style="color:#e8e8f0">34%</span></div>
-                <div style="font-size:12px;color:#8888a0;margin-bottom:4px">Industrials (↑3.1% vs Nifty)</div>
-                <div style="font-size:12px;color:#8888a0">Delivery: <span style="color:#ffab00">52.8%</span> (avg 52.8%) · Inst: <span style="color:#ffab00">29.7%</span></div>
+            <div class="tc-grid3 targets">
+                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹4,648</div></div>
+                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹4,952</div></div>
+                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹5,256</div></div>
             </div>
 
-            <div style="margin-bottom:8px;font-size:13px"><span style="color:#ff5252;margin-right:12px">✗ Near Pivot</span><span style="color:#00e676;margin-right:12px">✓ RS 94</span><span style="color:#00e676;margin-right:12px">✓ Earnings Clear</span><span style="color:#00e676;margin-right:12px">✓ Del 52.8%</span><span style="color:#ff5252;margin-right:12px">✗ Close 57%</span><span style="color:#00e676;margin-right:12px">✓ Inst 30%</span></div>
+            <div class="tc-info">
+                <div>VCP: <span style="color:var(--text)">15.4% → 8.7% (2T)</span> · Earn: <span style="color:var(--text)">?</span> · Rev: <span style="color:var(--text)">58%</span> · EPS: <span style="color:var(--text)">104%</span> · ROE: <span style="color:var(--text)">34%</span></div>
+                <div>Del: <span style="color:var(--warn)">52.8%</span> (avg 52.8%) · Inst: <span style="color:var(--warn)">29.7%</span></div>
+            </div>
 
-            <div><div style="color:#00e676;font-size:13px">No exit signals</div></div>
+            <div class="tc-checks"><span class="check no">Near Pivot</span><span class="check ok">RS 94</span><span class="check ok">Earnings</span><span class="check ok">Del 52.8%</span><span class="check no">Close 57%</span><span class="check ok">Inst 30%</span></div>
+            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
-            <div style="margin-top:12px;text-align:right">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AGVT&D" target="_blank"
-                   style="color:#448aff;font-size:12px;text-decoration:none">Open Chart →</a>
+            <div class="text-right" style="margin-top:10px">
+                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AGVT&D" target="_blank" class="tv-link">TradingView →</a>
             </div>
         </div>
-        <div style="background:#12121a;border:2px solid #ffab00;border-radius:14px;padding:24px;margin-bottom:16px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div class="tc" style="border-color:var(--warn)">
+            <div class="tc-head">
                 <div>
-                    <span style="font-family:'Bebas Neue';font-size:32px;color:#ffab00;letter-spacing:1px">FEDERALBNK</span>
-                    <span style="font-size:13px;color:#8888a0;margin-left:12px">Financial Services · Large Cap</span>
+                    <div class="tc-sym" style="color:var(--warn)">FEDERALBNK</div>
+                    <div class="tc-meta">Financial Services · Large Cap</div>
                 </div>
-                <div style="text-align:right">
-                    <div style="font-family:'Bebas Neue';font-size:24px;color:#ffab00">YELLOW</div>
-                    <div style="font-size:12px;color:#8888a0">Score 49 · RS 78</div>
-                </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Entry</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#00e676;margin-top:4px">₹302</div>
-                    <div style="font-size:11px;color:#8888a0">4.6% away</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Stop Loss</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#ff5252;margin-top:4px">₹281</div>
-                    <div style="font-size:11px;color:#8888a0">-7%</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Position</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#e8e8f0;margin-top:4px">473 sh</div>
-                    <div style="font-size:11px;color:#8888a0">₹142,846 (14.3%)</div>
+                <div class="text-right">
+                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
+                    <div class="tc-meta">Score 49 · RS 78</div>
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 1R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹323</div>
+            <div class="tc-grid3">
+                <div class="tc-box">
+                    <div class="tc-label">ENTRY</div>
+                    <div class="tc-val" style="color:var(--positive)">₹302</div>
+                    <div class="tc-sub">4.6% away</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 2R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹344</div>
+                <div class="tc-box">
+                    <div class="tc-label">STOP</div>
+                    <div class="tc-val" style="color:var(--negative)">₹281</div>
+                    <div class="tc-sub">-7%</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 3R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#00e676">₹365</div>
+                <div class="tc-box">
+                    <div class="tc-label">POSITION</div>
+                    <div class="tc-val">473 sh</div>
+                    <div class="tc-sub">₹142,846</div>
                 </div>
             </div>
 
-            <div style="background:#1a1a26;border-radius:8px;padding:14px;margin-bottom:12px">
-                <div style="font-size:12px;color:#8888a0;margin-bottom:8px">VCP: <span style="color:#e8e8f0;font-family:'JetBrains Mono'">15.3% → 7.7% → 6.1% → 5.0% (4T)</span> · Earnings: <span style="color:#e8e8f0">16d</span> · Rev: <span style="color:#e8e8f0">15%</span> · EPS: <span style="color:#e8e8f0">16%</span> · ROE: <span style="color:#e8e8f0">12%</span></div>
-                <div style="font-size:12px;color:#8888a0;margin-bottom:4px">Financial Services (↑6.6% vs Nifty)</div>
-                <div style="font-size:12px;color:#8888a0">Delivery: <span style="color:#ffab00">45.23%</span> (avg 52.6%) · Inst: <span style="color:#00e676">53.7%</span></div>
+            <div class="tc-grid3 targets">
+                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹323</div></div>
+                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹344</div></div>
+                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹365</div></div>
             </div>
 
-            <div style="margin-bottom:8px;font-size:13px"><span style="color:#00e676;margin-right:12px">✓ Near Pivot</span><span style="color:#00e676;margin-right:12px">✓ RS 78</span><span style="color:#00e676;margin-right:12px">✓ Earnings Clear</span><span style="color:#ff5252;margin-right:12px">✗ Del 45.23%</span><span style="color:#ff5252;margin-right:12px">✗ Close 69%</span><span style="color:#00e676;margin-right:12px">✓ Inst 54%</span></div>
+            <div class="tc-info">
+                <div>VCP: <span style="color:var(--text)">15.3% → 7.7% → 6.1% → 5.0% (4T)</span> · Earn: <span style="color:var(--text)">15d</span> · Rev: <span style="color:var(--text)">15%</span> · EPS: <span style="color:var(--text)">16%</span> · ROE: <span style="color:var(--text)">12%</span></div>
+                <div>Del: <span style="color:var(--warn)">45.23%</span> (avg 52.6%) · Inst: <span style="color:var(--positive)">53.7%</span></div>
+            </div>
 
-            <div><div style="color:#00e676;font-size:13px">No exit signals</div></div>
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check ok">RS 78</span><span class="check ok">Earnings</span><span class="check no">Del 45.23%</span><span class="check no">Close 69%</span><span class="check ok">Inst 54%</span></div>
+            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
-            <div style="margin-top:12px;text-align:right">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AFEDERALBNK" target="_blank"
-                   style="color:#448aff;font-size:12px;text-decoration:none">Open Chart →</a>
+            <div class="text-right" style="margin-top:10px">
+                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AFEDERALBNK" target="_blank" class="tv-link">TradingView →</a>
             </div>
         </div>
-        <div style="background:#12121a;border:2px solid #ffab00;border-radius:14px;padding:24px;margin-bottom:16px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div class="tc" style="border-color:var(--warn)">
+            <div class="tc-head">
                 <div>
-                    <span style="font-family:'Bebas Neue';font-size:32px;color:#ffab00;letter-spacing:1px">LT</span>
-                    <span style="font-size:13px;color:#8888a0;margin-left:12px">Industrials · Large Cap</span>
+                    <div class="tc-sym" style="color:var(--warn)">LT</div>
+                    <div class="tc-meta">Industrials · Large Cap</div>
                 </div>
-                <div style="text-align:right">
-                    <div style="font-family:'Bebas Neue';font-size:24px;color:#ffab00">YELLOW</div>
-                    <div style="font-size:12px;color:#8888a0">Score 48 · RS 6</div>
-                </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Entry</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#00e676;margin-top:4px">₹4,032</div>
-                    <div style="font-size:11px;color:#8888a0">1.9% away</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Stop Loss</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#ff5252;margin-top:4px">₹3,750</div>
-                    <div style="font-size:11px;color:#8888a0">-7%</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Position</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#e8e8f0;margin-top:4px">35 sh</div>
-                    <div style="font-size:11px;color:#8888a0">₹141,120 (14.1%)</div>
+                <div class="text-right">
+                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
+                    <div class="tc-meta">Score 48 · RS 6</div>
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 1R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹4,314</div>
+            <div class="tc-grid3">
+                <div class="tc-box">
+                    <div class="tc-label">ENTRY</div>
+                    <div class="tc-val" style="color:var(--positive)">₹4,032</div>
+                    <div class="tc-sub">1.9% away</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 2R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹4,596</div>
+                <div class="tc-box">
+                    <div class="tc-label">STOP</div>
+                    <div class="tc-val" style="color:var(--negative)">₹3,750</div>
+                    <div class="tc-sub">-7%</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 3R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#00e676">₹4,879</div>
+                <div class="tc-box">
+                    <div class="tc-label">POSITION</div>
+                    <div class="tc-val">35 sh</div>
+                    <div class="tc-sub">₹141,120</div>
                 </div>
             </div>
 
-            <div style="background:#1a1a26;border-radius:8px;padding:14px;margin-bottom:12px">
-                <div style="font-size:12px;color:#8888a0;margin-bottom:8px">VCP: <span style="color:#e8e8f0;font-family:'JetBrains Mono'">14.5% → 9.6% → 5.8% → 5.4% (4T)</span> · Earnings: <span style="color:#e8e8f0">24d</span> · Rev: <span style="color:#e8e8f0">11%</span> · EPS: <span style="color:#e8e8f0">-4%</span> · ROE: <span style="color:#e8e8f0">15%</span></div>
-                <div style="font-size:12px;color:#8888a0;margin-bottom:4px">Industrials (↑3.1% vs Nifty)</div>
-                <div style="font-size:12px;color:#8888a0">Delivery: <span style="color:#ffab00">46.75%</span> (avg 55.1%) · Inst: <span style="color:#00e676">49.2%</span></div>
+            <div class="tc-grid3 targets">
+                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹4,314</div></div>
+                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹4,596</div></div>
+                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹4,879</div></div>
             </div>
 
-            <div style="margin-bottom:8px;font-size:13px"><span style="color:#00e676;margin-right:12px">✓ Near Pivot</span><span style="color:#ff5252;margin-right:12px">✗ RS 6</span><span style="color:#00e676;margin-right:12px">✓ Earnings Clear</span><span style="color:#ff5252;margin-right:12px">✗ Del 46.75%</span><span style="color:#00e676;margin-right:12px">✓ Close 89%</span><span style="color:#00e676;margin-right:12px">✓ Inst 49%</span></div>
+            <div class="tc-info">
+                <div>VCP: <span style="color:var(--text)">14.5% → 9.6% → 5.8% → 5.4% (4T)</span> · Earn: <span style="color:var(--text)">23d</span> · Rev: <span style="color:var(--text)">11%</span> · EPS: <span style="color:var(--text)">-4%</span> · ROE: <span style="color:var(--text)">15%</span></div>
+                <div>Del: <span style="color:var(--warn)">46.75%</span> (avg 55.1%) · Inst: <span style="color:var(--positive)">49.2%</span></div>
+            </div>
 
-            <div><div style="color:#00e676;font-size:13px">No exit signals</div></div>
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check no">RS 6</span><span class="check ok">Earnings</span><span class="check no">Del 46.75%</span><span class="check ok">Close 89%</span><span class="check ok">Inst 49%</span></div>
+            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
-            <div style="margin-top:12px;text-align:right">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3ALT" target="_blank"
-                   style="color:#448aff;font-size:12px;text-decoration:none">Open Chart →</a>
+            <div class="text-right" style="margin-top:10px">
+                <a href="https://www.tradingview.com/chart/?symbol=NSE%3ALT" target="_blank" class="tv-link">TradingView →</a>
             </div>
         </div>
-        <div style="background:#12121a;border:2px solid #ffab00;border-radius:14px;padding:24px;margin-bottom:16px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div class="tc" style="border-color:var(--warn)">
+            <div class="tc-head">
                 <div>
-                    <span style="font-family:'Bebas Neue';font-size:32px;color:#ffab00;letter-spacing:1px">TATASTEEL</span>
-                    <span style="font-size:13px;color:#8888a0;margin-left:12px">Basic Materials · Large Cap</span>
+                    <div class="tc-sym" style="color:var(--warn)">TATASTEEL</div>
+                    <div class="tc-meta">Basic Materials · Large Cap</div>
                 </div>
-                <div style="text-align:right">
-                    <div style="font-family:'Bebas Neue';font-size:24px;color:#ffab00">YELLOW</div>
-                    <div style="font-size:12px;color:#8888a0">Score 43 · RS 61</div>
-                </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Entry</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#00e676;margin-top:4px">₹216</div>
-                    <div style="font-size:11px;color:#8888a0">4.6% away</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Stop Loss</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#ff5252;margin-top:4px">₹201</div>
-                    <div style="font-size:11px;color:#8888a0">-7%</div>
-                </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:12px;text-align:center">
-                    <div style="font-size:11px;color:#8888a0;text-transform:uppercase;letter-spacing:1px">Position</div>
-                    <div style="font-family:'JetBrains Mono';font-size:20px;color:#e8e8f0;margin-top:4px">660 sh</div>
-                    <div style="font-size:11px;color:#8888a0">₹142,857 (14.3%)</div>
+                <div class="text-right">
+                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
+                    <div class="tc-meta">Score 43 · RS 61</div>
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 1R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹232</div>
+            <div class="tc-grid3">
+                <div class="tc-box">
+                    <div class="tc-label">ENTRY</div>
+                    <div class="tc-val" style="color:var(--positive)">₹216</div>
+                    <div class="tc-sub">4.6% away</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 2R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#448aff">₹247</div>
+                <div class="tc-box">
+                    <div class="tc-label">STOP</div>
+                    <div class="tc-val" style="color:var(--negative)">₹201</div>
+                    <div class="tc-sub">-7%</div>
                 </div>
-                <div style="background:#1a1a26;border-radius:8px;padding:10px;text-align:center">
-                    <div style="font-size:10px;color:#8888a0">TARGET 3R</div>
-                    <div style="font-family:'JetBrains Mono';font-size:16px;color:#00e676">₹262</div>
+                <div class="tc-box">
+                    <div class="tc-label">POSITION</div>
+                    <div class="tc-val">660 sh</div>
+                    <div class="tc-sub">₹142,857</div>
                 </div>
             </div>
 
-            <div style="background:#1a1a26;border-radius:8px;padding:14px;margin-bottom:12px">
-                <div style="font-size:12px;color:#8888a0;margin-bottom:8px">VCP: <span style="color:#e8e8f0;font-family:'JetBrains Mono'">13.6% → 8.9% → 6.5% → 6.1% (4T)</span> · Earnings: <span style="color:#e8e8f0">30d</span> · Rev: <span style="color:#e8e8f0">6%</span> · EPS: <span style="color:#e8e8f0">731%</span> · ROE: <span style="color:#e8e8f0">4%</span></div>
-                <div style="font-size:12px;color:#8888a0;margin-bottom:4px">Basic Materials (↑8.1% vs Nifty)</div>
-                <div style="font-size:12px;color:#8888a0">Delivery: <span style="color:#ff5252">29.03%</span> (avg 41.2%) · Inst: <span style="color:#00e676">33.7%</span></div>
+            <div class="tc-grid3 targets">
+                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹232</div></div>
+                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹247</div></div>
+                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹262</div></div>
             </div>
 
-            <div style="margin-bottom:8px;font-size:13px"><span style="color:#00e676;margin-right:12px">✓ Near Pivot</span><span style="color:#ff5252;margin-right:12px">✗ RS 61</span><span style="color:#00e676;margin-right:12px">✓ Earnings Clear</span><span style="color:#ff5252;margin-right:12px">✗ Del 29.03%</span><span style="color:#00e676;margin-right:12px">✓ Close 89%</span><span style="color:#00e676;margin-right:12px">✓ Inst 34%</span></div>
+            <div class="tc-info">
+                <div>VCP: <span style="color:var(--text)">13.6% → 8.9% → 6.5% → 6.1% (4T)</span> · Earn: <span style="color:var(--text)">29d</span> · Rev: <span style="color:var(--text)">6%</span> · EPS: <span style="color:var(--text)">731%</span> · ROE: <span style="color:var(--text)">4%</span></div>
+                <div>Del: <span style="color:var(--negative)">29.03%</span> (avg 41.2%) · Inst: <span style="color:var(--positive)">33.7%</span></div>
+            </div>
 
-            <div><div style="color:#00e676;font-size:13px">No exit signals</div></div>
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check no">RS 61</span><span class="check ok">Earnings</span><span class="check no">Del 29.03%</span><span class="check ok">Close 89%</span><span class="check ok">Inst 34%</span></div>
+            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
-            <div style="margin-top:12px;text-align:right">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3ATATASTEEL" target="_blank"
-                   style="color:#448aff;font-size:12px;text-decoration:none">Open Chart →</a>
+            <div class="text-right" style="margin-top:10px">
+                <a href="https://www.tradingview.com/chart/?symbol=NSE%3ATATASTEEL" target="_blank" class="tv-link">TradingView →</a>
             </div>
         </div>
         </div>
 
-<div style="text-align:center;padding:40px 0;color:#8888a0;font-size:12px;font-family:'JetBrains Mono'">
-    8 RED setups hidden (conditions not met) · <a href="dashboard.html" style="color:#448aff;text-decoration:none">Full Dashboard →</a>
+<div class="footer-note">
+    8 red setups hidden · <a href="dashboard.html">Full Dashboard →</a>
 </div>
 
+</div>
 </body>
 </html>

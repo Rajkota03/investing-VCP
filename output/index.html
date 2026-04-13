@@ -4,87 +4,60 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VCP Scanner</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-    background: #0a0a0f;
-    color: #e8e8f0;
-    font-family: 'DM Sans', sans-serif;
+    background: #111318;
+    color: #e8e4dc;
+    font-family: 'Inter', -apple-system, sans-serif;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 24px;
 }
-.container {
-    text-align: center;
-    padding: 40px 20px;
-}
-h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 56px;
-    letter-spacing: 4px;
-    color: #00e676;
-    margin-bottom: 8px;
-}
-.sub {
-    color: #8888a0;
-    font-size: 15px;
-    margin-bottom: 48px;
-}
-.cards {
-    display: flex;
-    gap: 24px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
+.container { text-align: center; max-width: 640px; }
+h1 { font-weight: 700; font-size: 40px; letter-spacing: -1px; margin-bottom: 6px; }
+h1 span { color: #c9a84c; }
+.sub { color: #8a8780; font-size: 14px; margin-bottom: 48px; line-height: 1.5; }
+.cards { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
 .card {
-    background: #12121a;
-    border: 2px solid #2a2a3a;
-    border-radius: 16px;
-    padding: 40px 36px;
-    width: 300px;
+    background: #1a1d24;
+    border: 1px solid #2e333d;
+    border-radius: 12px;
+    padding: 36px 28px;
+    width: 280px;
     text-decoration: none;
     transition: all 0.2s;
 }
-.card:hover {
-    border-color: #00e676;
-    transform: translateY(-4px);
-}
-.card h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 32px;
-    letter-spacing: 2px;
-    margin-bottom: 12px;
-}
-.card p {
-    color: #8888a0;
-    font-size: 14px;
-    line-height: 1.6;
-}
-.card.action h2 { color: #00e676; }
-.card.action { border-color: #00e67633; }
-.card.dash h2 { color: #448aff; }
-.card.dash { border-color: #448aff33; }
-.footer {
-    margin-top: 48px;
-    color: #4a4a5a;
-    font-size: 12px;
+.card:hover { border-color: #c9a84c; transform: translateY(-3px); }
+.card h2 { font-weight: 700; font-size: 20px; margin-bottom: 10px; letter-spacing: -0.3px; }
+.card p { color: #8a8780; font-size: 13px; line-height: 1.6; }
+.card.action h2 { color: #4caf7c; }
+.card.action { border-color: #4caf7c30; }
+.card.dash h2 { color: #5b8fd9; }
+.card.dash { border-color: #5b8fd930; }
+.footer { margin-top: 48px; color: #5c5a56; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+@media (max-width: 600px) {
+    h1 { font-size: 28px; }
+    .cards { flex-direction: column; align-items: center; }
+    .card { width: 100%; max-width: 320px; padding: 28px 20px; }
 }
 </style>
 </head>
 <body>
 <div class="container">
-    <h1>VCP SCANNER</h1>
-    <div class="sub">Minervini SEPA Method &middot; NSE Nifty 200 &middot; Updated Daily at 4 PM IST</div>
+    <h1>VCP <span>Scanner</span></h1>
+    <div class="sub">Minervini SEPA Method &middot; NSE Nifty 200 &middot; Updated daily before market open</div>
     <div class="cards">
         <a href="action.html" class="card action">
-            <h2>ACTION BOARD</h2>
-            <p>Ready-to-trade setups only.<br>GREEN = buy, YELLOW = watch.<br>Full trade plan included.</p>
+            <h2>Action Board</h2>
+            <p>Ready-to-trade setups only. GREEN = buy, YELLOW = watch. Full trade plan included.</p>
         </a>
         <a href="dashboard.html" class="card dash">
-            <h2>FULL DASHBOARD</h2>
-            <p>All detected VCP setups.<br>Sortable, filterable, with<br>complete enrichment data.</p>
+            <h2>Full Dashboard</h2>
+            <p>All detected VCP setups. Sortable, filterable, with complete enrichment data.</p>
         </a>
     </div>
     <div class="footer">

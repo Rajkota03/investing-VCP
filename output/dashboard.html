@@ -3,112 +3,156 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VCP Scanner Dashboard</title>
+<title>VCP Scanner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1a1a26;
-    --border: #2a2a3a;
-    --text: #e8e8f0;
-    --text-dim: #8888a0;
-    --green: #00e676;
-    --green-dim: #00c85320;
-    --amber: #ffab00;
-    --amber-dim: #ffab0020;
-    --red: #ff5252;
-    --red-dim: #ff525220;
-    --blue: #448aff;
-    --blue-dim: #448aff20;
-    --purple: #b388ff;
+    --bg: #111318;
+    --surface: #1a1d24;
+    --surface2: #22262f;
+    --border: #2e333d;
+    --text: #e8e4dc;
+    --text-dim: #8a8780;
+    --text-muted: #5c5a56;
+    --accent: #c9a84c;
+    --accent-dim: #c9a84c18;
+    --positive: #4caf7c;
+    --positive-dim: #4caf7c18;
+    --negative: #d4644a;
+    --negative-dim: #d4644a18;
+    --info: #5b8fd9;
+    --info-dim: #5b8fd918;
+    --warn: #d4a04a;
+    --warn-dim: #d4a04a18;
+    --radius: 10px;
+    --radius-sm: 6px;
 }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'DM Sans', -apple-system, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     min-height: 100vh;
-    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
+/* Typography */
+.t-display { font-weight: 700; font-size: 28px; letter-spacing: -0.5px; color: var(--text); }
+.t-heading { font-weight: 600; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-dim); }
+.t-mono { font-family: 'JetBrains Mono', 'SF Mono', monospace; }
+.t-dim { color: var(--text-dim); }
+.t-muted { color: var(--text-muted); }
+
+/* Utility */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* Components */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.pill {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+.pill-positive { background: var(--positive-dim); color: var(--positive); }
+.pill-negative { background: var(--negative-dim); color: var(--negative); }
+.pill-warn { background: var(--warn-dim); color: var(--warn); }
+.pill-info { background: var(--info-dim); color: var(--info); }
+.pill-accent { background: var(--accent-dim); color: var(--accent); }
+
+.kv { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.kv:last-child { border-bottom: none; }
+.kv .k { color: var(--text-dim); }
+.kv .v { font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+
+
 .header {
-    padding: 32px 40px 24px;
+    padding: 20px 24px;
     border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
 }
-.header h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 36px;
-    letter-spacing: 2px;
-    color: var(--green);
+.header .logo {
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.3px;
 }
+.header .logo span { color: var(--accent); }
 .header .meta {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--text-dim);
-    margin-top: 4px;
     font-family: 'JetBrains Mono', monospace;
 }
 
 .stats {
-    display: flex;
-    gap: 16px;
-    padding: 24px 40px;
-    overflow-x: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
 }
-.stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px 24px;
-    min-width: 160px;
-    flex-shrink: 0;
+.stat {
+    background: var(--bg);
+    padding: 16px 20px;
 }
-.stat-card .label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: var(--text-dim);
-    font-weight: 600;
-}
-.stat-card .value {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 42px;
-    line-height: 1;
-    margin-top: 8px;
-}
-.stat-card .value.green { color: var(--green); }
-.stat-card .value.amber { color: var(--amber); }
-.stat-card .value.blue { color: var(--blue); }
+.stat .label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 600; }
+.stat .num { font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 700; margin-top: 4px; }
+.stat .num.gold { color: var(--accent); }
+.stat .num.green { color: var(--positive); }
+.stat .num.blue { color: var(--info); }
 
 .filters {
     display: flex;
-    gap: 10px;
-    padding: 0 40px 20px;
-    flex-wrap: wrap;
+    gap: 6px;
+    padding: 16px 24px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+    -webkit-overflow-scrolling: touch;
 }
-.filter-btn {
-    background: var(--surface);
+.fbtn {
+    background: transparent;
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 16px;
+    border-radius: 20px;
+    padding: 6px 14px;
     color: var(--text-dim);
-    font-size: 13px;
-    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    white-space: nowrap;
+    transition: all 0.15s;
 }
-.filter-btn:hover { border-color: var(--green); color: var(--text); }
-.filter-btn.active { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.fbtn:hover { border-color: var(--accent); color: var(--text); }
+.fbtn.on { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 
 .content {
     display: flex;
-    gap: 0;
-    height: calc(100vh - 280px);
-    min-height: 500px;
+    height: calc(100vh - 240px);
+    min-height: 400px;
 }
 
 .table-wrap {
@@ -117,498 +161,367 @@ body {
     border-right: 1px solid var(--border);
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-}
-thead {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { position: sticky; top: 0; z-index: 10; }
 th {
     background: var(--surface);
-    padding: 12px 16px;
+    padding: 10px 14px;
     text-align: left;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
+    font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-dim);
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    font-weight: 600;
     border-bottom: 1px solid var(--border);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
 }
-th:hover { color: var(--text); }
-
+th:hover { color: var(--text-dim); }
 td {
-    padding: 12px 16px;
+    padding: 10px 14px;
     border-bottom: 1px solid var(--border);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
+    font-size: 12px;
     white-space: nowrap;
 }
-tr {
-    cursor: pointer;
-    transition: background 0.15s;
-}
-tr:hover { background: var(--surface2); }
-tr.selected { background: var(--green-dim); }
+tr { cursor: pointer; transition: background 0.12s; }
+tr:hover { background: var(--surface); }
+tr.sel { background: var(--accent-dim); }
 
-.score {
+.badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 28px;
-    border-radius: 6px;
+    width: 38px; height: 26px;
+    border-radius: var(--radius-sm);
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
 }
-.score.high { background: var(--green-dim); color: var(--green); }
-.score.mid { background: var(--amber-dim); color: var(--amber); }
-.score.low { background: var(--red-dim); color: var(--red); }
+.badge-high { background: var(--positive-dim); color: var(--positive); }
+.badge-mid { background: var(--warn-dim); color: var(--warn); }
+.badge-low { background: var(--negative-dim); color: var(--negative); }
 
-.pill {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    margin: 1px 2px;
-}
-.pill.green { background: var(--green-dim); color: var(--green); }
-.pill.amber { background: var(--amber-dim); color: var(--amber); }
-.pill.red { background: var(--red-dim); color: var(--red); }
-.pill.blue { background: var(--blue-dim); color: var(--blue); }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.dot-green { background: var(--positive); }
+.dot-yellow { background: var(--warn); }
+.dot-red { background: var(--negative); }
 
-.detail-panel {
-    width: 420px;
-    min-width: 420px;
+.detail {
+    width: 400px;
+    min-width: 400px;
     overflow-y: auto;
     padding: 24px;
     display: none;
 }
-.detail-panel.show { display: block; }
+.detail.show { display: block; }
+.detail h2 { font-weight: 700; font-size: 24px; letter-spacing: -0.3px; margin-bottom: 2px; }
+.detail .sub { font-size: 12px; color: var(--text-dim); margin-bottom: 16px; }
+.detail-sec { margin-bottom: 20px; }
+.detail-sec h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
 
-.detail-panel h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    letter-spacing: 1px;
-    color: var(--green);
-    margin-bottom: 4px;
-}
-.detail-panel .sub {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-bottom: 20px;
-}
-
-.detail-section {
-    margin-bottom: 20px;
-}
-.detail-section h3 {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: var(--text-dim);
-    margin-bottom: 10px;
-    font-weight: 600;
-}
-.detail-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-}
-.detail-row .label { color: var(--text-dim); }
-.detail-row .val { font-family: 'JetBrains Mono', monospace; font-weight: 500; }
-
-.contraction-viz {
-    display: flex;
-    align-items: end;
-    gap: 8px;
-    height: 60px;
-    margin: 12px 0;
-}
-.contraction-bar {
+.cbar-wrap { display: flex; align-items: end; gap: 6px; height: 50px; margin: 8px 0 4px; }
+.cbar {
     flex: 1;
-    background: var(--green);
-    border-radius: 4px 4px 0 0;
-    opacity: 0.7;
+    background: var(--accent);
+    border-radius: 3px 3px 0 0;
+    opacity: 0.6;
     position: relative;
-    min-width: 24px;
+    min-width: 20px;
 }
-.contraction-bar span {
+.cbar span {
     position: absolute;
-    top: -18px;
+    top: -16px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 10px;
+    font-size: 9px;
     font-family: 'JetBrains Mono', monospace;
     color: var(--text-dim);
 }
 
-.badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
+.badges-wrap { display: flex; flex-wrap: wrap; gap: 4px; margin: 8px 0; }
+
+.trade-box {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
     margin-top: 8px;
 }
 
-@media (max-width: 1200px) {
-    .detail-panel { width: 360px; min-width: 360px; }
+.chart-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: border-color 0.15s;
 }
-@media (max-width: 900px) {
+.chart-link:hover { border-color: var(--accent); }
+
+@media (max-width: 1100px) {
+    .detail { width: 340px; min-width: 340px; }
+}
+@media (max-width: 860px) {
     .content { flex-direction: column; height: auto; }
-    .detail-panel { width: 100%; min-width: 100%; border-right: none; border-top: 1px solid var(--border); }
-    .table-wrap { border-right: none; }
+    .detail { width: 100%; min-width: 100%; border-right: none; border-top: 1px solid var(--border); }
+    .table-wrap { border-right: none; max-height: 50vh; }
+    .header { padding: 16px; }
+    .filters { padding: 12px 16px; }
+    td, th { padding: 8px 10px; }
+}
+@media (max-width: 600px) {
+    .stat .num { font-size: 22px; }
+    .stat { padding: 12px 14px; }
+    .stats { grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); }
 }
 </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>VCP SCANNER</h1>
-    <div class="meta">13 Apr 2026, 11:24 PM &nbsp;|&nbsp; 18 setups &nbsp;|&nbsp; 9s scan time</div>
+    <div class="logo">VCP <span>Scanner</span></div>
+    <div class="meta">14 Apr 2026, 01:20 AM &middot; 18 setups &middot; 10s</div>
 </div>
 
 <div class="stats">
-    <div class="stat-card">
-        <div class="label">Setups Found</div>
-        <div class="value green">18</div>
-    </div>
-    <div class="stat-card">
-        <div class="label">Avg Score</div>
-        <div class="value green">52</div>
-    </div>
-    <div class="stat-card">
-        <div class="label">Earnings Clear</div>
-        <div class="value blue">10</div>
-    </div>
-    <div class="stat-card">
-        <div class="label">Sector Tailwind</div>
-        <div class="value amber">18</div>
-    </div>
-    <div class="stat-card">
-        <div class="label">Volume Interest</div>
-        <div class="value amber">9</div>
-    </div>
-    <div class="stat-card">
-        <div class="label">High Delivery</div>
-        <div class="value green">0</div>
-    </div>
-    <div class="stat-card">
-        <div class="label">Inst Backed</div>
-        <div class="value blue">8</div>
-    </div>
-    <div class="stat-card">
-        <div class="label">Ready (GREEN)</div>
-        <div class="value green">1</div>
-    </div>
+    <div class="stat"><div class="label">Setups</div><div class="num gold">18</div></div>
+    <div class="stat"><div class="label">Avg Score</div><div class="num">52</div></div>
+    <div class="stat"><div class="label">Ready</div><div class="num green">1</div></div>
+    <div class="stat"><div class="label">Earnings OK</div><div class="num blue">10</div></div>
+    <div class="stat"><div class="label">Tailwind</div><div class="num green">18</div></div>
+    <div class="stat"><div class="label">Hi Delivery</div><div class="num green">0</div></div>
+    <div class="stat"><div class="label">Inst Backed</div><div class="num blue">8</div></div>
 </div>
 
 <div class="filters">
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="ready_green">GREEN Only</button>
-    <button class="filter-btn" data-filter="earnings_clear">Earnings Clear</button>
-    <button class="filter-btn" data-filter="strong_fundamentals">Strong Fundamentals</button>
-    <button class="filter-btn" data-filter="sector_tailwind">Sector Tailwind</button>
-    <button class="filter-btn" data-filter="volume_interest">Volume Interest</button>
-    <button class="filter-btn" data-filter="high_delivery">High Delivery</button>
-    <button class="filter-btn" data-filter="inst_backed">Inst Backed</button>
-    <button class="filter-btn" data-filter="score_70">Score 70+</button>
+    <button class="fbtn on" data-f="all">All</button>
+    <button class="fbtn" data-f="ready_green">GREEN</button>
+    <button class="fbtn" data-f="earnings_clear">Earnings Clear</button>
+    <button class="fbtn" data-f="strong_fundamentals">Strong Fundamentals</button>
+    <button class="fbtn" data-f="sector_tailwind">Tailwind</button>
+    <button class="fbtn" data-f="volume_interest">Volume Interest</button>
+    <button class="fbtn" data-f="high_delivery">Hi Delivery</button>
+    <button class="fbtn" data-f="inst_backed">Inst Backed</button>
+    <button class="fbtn" data-f="score_70">Score 70+</button>
 </div>
 
 <div class="content">
     <div class="table-wrap">
         <table>
-            <thead>
-                <tr>
-                    <th data-sort="rank">#</th>
-                    <th data-sort="readiness">Ready</th>
-                    <th data-sort="score">Score</th>
-                    <th data-sort="symbol">Symbol</th>
-                    <th data-sort="close">Price</th>
-                    <th data-sort="pivot">Pivot</th>
-                    <th data-sort="pct_from_pivot">Away</th>
-                    <th data-sort="num_contractions">VCP</th>
-                    <th data-sort="days_to_earnings">Earnings</th>
-                    <th data-sort="rs_rating">RS</th>
-                    <th data-sort="sector">Sector</th>
-                    <th>Flags</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
+            <thead><tr>
+                <th data-s="rank">#</th>
+                <th data-s="readiness">Status</th>
+                <th data-s="score">Score</th>
+                <th data-s="symbol">Ticker</th>
+                <th data-s="close">Price</th>
+                <th data-s="pivot">Pivot</th>
+                <th data-s="pct_from_pivot">Away</th>
+                <th data-s="num_contractions">VCP</th>
+                <th data-s="days_to_earnings">Earn</th>
+                <th data-s="rs_rating">RS</th>
+                <th data-s="delivery_pct_today">Del%</th>
+                <th data-s="sector">Sector</th>
+                <th>Flags</th>
+            </tr></thead>
+            <tbody id="tb"></tbody>
         </table>
     </div>
-    <div class="detail-panel" id="detailPanel"></div>
+    <div class="detail" id="dp"></div>
 </div>
 
 <script>
-const DATA = [{"symbol": "MCX", "close": 2765.6, "sma50": 2481.11, "sma150": 2112.9, "sma200": 1992.78, "pct_from_high": 0.4, "pct_above_low": 206.1, "avg_volume": 4188171, "high_52w": 2776.4, "low_52w": 903.55, "contractions": [16.4, 6.1], "num_contractions": 2, "pivot": 2702.7, "pct_from_pivot": -2.3, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 7, "score": 68, "flags": ["EARNINGS_CLEAR", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "INSTITUTIONAL_BACKED"], "earnings_date": "2026-05-07", "days_to_earnings": 24, "earnings_flag": "CLEAR", "revenue_growth": 1.149, "earnings_growth": 1.506, "roe": 0.2971980471237529, "profit_margins": 0.51717997, "market_cap": 703884230656, "market_cap_category": "Large", "sector": "Financial Services", "industry": "Financial Data & Stock Exchanges", "delivery_pct_today": 37.37, "delivery_pct_avg_20d": 40.4, "delivery_pct_trend": "FALLING", "high_delivery_days": 1, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 51.5, "insider_pct": 15.0, "institutional_count": null, "returns_1m": 7.3, "returns_3m": 20.0, "returns_6m": 68.4, "returns_12m": 160.2, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 100, "sector_perf_1m": 5.8, "sector_vs_nifty_1m": 6.6, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "False", "at_pivot": "False", "rs_pass": true, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.9, "volume_source": "delivery", "strong_close": true, "close_position": 93, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 2702.7, "stop_loss": 2513.51, "stop_pct": 7.000000000000001, "risk_per_share": 189.19, "shares": 52, "position_value": 140540, "position_pct": 14.1, "risk_amount": 10000, "reward_1r": 2891.89, "reward_2r": 3081.08, "reward_3r": 3270.27}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": 3.6}, "readiness": "YELLOW"}, {"symbol": "ONGC", "close": 287.55, "sma50": 271.82, "sma150": 246.59, "sma200": 241.95, "pct_from_high": 1.9, "pct_above_low": 47.9, "avg_volume": 25463477, "high_52w": 293.0, "low_52w": 194.47, "contractions": [10.6, 6.2], "num_contractions": 2, "pivot": 293.0, "pct_from_pivot": 1.9, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 19, "score": 62, "flags": ["EARNINGS_UNKNOWN", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST"], "earnings_date": null, "days_to_earnings": null, "earnings_flag": "UNKNOWN", "revenue_growth": 0.008, "earnings_growth": 0.162, "roe": 0.10547860701194696, "profit_margins": 0.057979997, "market_cap": 3617459273728, "market_cap_category": "Large", "sector": "Energy", "industry": "Oil & Gas Integrated", "delivery_pct_today": 23.66, "delivery_pct_avg_20d": 45.0, "delivery_pct_trend": "FALLING", "high_delivery_days": 1, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 22.9, "insider_pct": 69.2, "institutional_count": null, "returns_1m": 6.2, "returns_3m": 23.1, "returns_6m": 22.9, "returns_12m": 24.6, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 72, "sector_perf_1m": 3.4, "sector_vs_nifty_1m": 4.2, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 1.7, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": true, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.5, "volume_source": "delivery", "strong_close": false, "close_position": 70, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 293.0, "stop_loss": 272.49, "stop_pct": 7.000000000000001, "risk_per_share": 20.51, "shares": 487, "position_value": 142691, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 313.51, "reward_2r": 334.02, "reward_3r": 354.53}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": 0.4}, "readiness": "YELLOW"}, {"symbol": "TVSMOTOR", "close": 3738.1, "sma50": 3663.3, "sma150": 3594.39, "sma200": 3434.87, "pct_from_high": 5.5, "pct_above_low": 68.9, "avg_volume": 930280, "high_52w": 3956.17, "low_52w": 2213.36, "contractions": [13.5, 5.5], "num_contractions": 2, "pivot": 3779.89, "pct_from_pivot": 1.1, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 9, "score": 62, "flags": ["EARNINGS_CLEAR", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST"], "earnings_date": "2026-04-28", "days_to_earnings": 15, "earnings_flag": "CLEAR", "revenue_growth": 0.317, "earnings_growth": 0.487, "roe": 0.2629025164111212, "profit_margins": 0.055159997, "market_cap": 1776443195392, "market_cap_category": "Large", "sector": "Consumer Cyclical", "industry": "Auto Manufacturers", "delivery_pct_today": 40.47, "delivery_pct_avg_20d": 54.3, "delivery_pct_trend": "FLAT", "high_delivery_days": 4, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 26.1, "insider_pct": 52.1, "institutional_count": null, "returns_1m": 3.4, "returns_3m": -2.3, "returns_6m": 6.8, "returns_12m": 51.5, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 22, "sector_perf_1m": 1.9, "sector_vs_nifty_1m": 2.7, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 1.7, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.7, "volume_source": "delivery", "strong_close": false, "close_position": 40, "institutional_pass": true, "conditions_met": "3", "conditions_total": 6}, "trade_plan": {"entry_price": 3779.89, "stop_loss": 3515.3, "stop_pct": 7.000000000000001, "risk_per_share": 264.59, "shares": 37, "position_value": 139856, "position_pct": 14.0, "risk_amount": 10000, "reward_1r": 4044.48, "reward_2r": 4309.07, "reward_3r": 4573.66}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -2.7}, "readiness": "RED"}, {"symbol": "BEL", "close": 441.55, "sma50": 436.85, "sma150": 415.23, "sma200": 409.86, "pct_from_high": 6.7, "pct_above_low": 73.5, "avg_volume": 19742473, "high_52w": 473.45, "low_52w": 254.52, "contractions": [10.8, 5.3], "num_contractions": 2, "pivot": 447.75, "pct_from_pivot": 1.4, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 9, "score": 60, "flags": ["EARNINGS_UNKNOWN", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND"], "earnings_date": null, "days_to_earnings": null, "earnings_flag": "UNKNOWN", "revenue_growth": 0.24, "earnings_growth": 0.207, "roe": 0.26641981106334317, "profit_margins": 0.22475, "market_cap": 3227632795648, "market_cap_category": "Large", "sector": "Industrials", "industry": "Aerospace & Defense", "delivery_pct_today": 45.07, "delivery_pct_avg_20d": 43.8, "delivery_pct_trend": "FLAT", "high_delivery_days": 1, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 25.5, "insider_pct": 53.2, "institutional_count": null, "returns_1m": -3.5, "returns_3m": 6.7, "returns_6m": 8.1, "returns_12m": 54.6, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 44, "sector_perf_1m": 2.3, "sector_vs_nifty_1m": 3.1, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 1.0, "volume_source": "delivery", "strong_close": false, "close_position": 66, "institutional_pass": true, "conditions_met": "3", "conditions_total": 6}, "trade_plan": {"entry_price": 447.75, "stop_loss": 416.41, "stop_pct": 7.000000000000001, "risk_per_share": 31.34, "shares": 319, "position_value": 142832, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 479.09, "reward_2r": 510.43, "reward_3r": 541.77}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -0.2}, "readiness": "RED"}, {"symbol": "NYKAA", "close": 256.96, "sma50": 254.53, "sma150": 253.55, "sma200": 243.74, "pct_from_high": 10.0, "pct_above_low": 54.8, "avg_volume": 6569142, "high_52w": 285.6, "low_52w": 165.97, "contractions": [10.1, 5.1], "num_contractions": 2, "pivot": 259.4, "pct_from_pivot": 0.9, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 8, "score": 59, "flags": ["EARNINGS_UNKNOWN", "WEAK_FUNDAMENTALS", "SECTOR_TAILWIND", "INSTITUTIONAL_BACKED"], "earnings_date": null, "days_to_earnings": null, "earnings_flag": "UNKNOWN", "revenue_growth": 0.267, "earnings_growth": 1.444, "roe": 0.05078076970367638, "profit_margins": 0.01498, "market_cap": 736041435136, "market_cap_category": "Large", "sector": "Consumer Cyclical", "industry": "Internet Retail", "delivery_pct_today": 45.58, "delivery_pct_avg_20d": 50.1, "delivery_pct_trend": "FLAT", "high_delivery_days": 2, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 31.2, "insider_pct": 57.3, "institutional_count": null, "returns_1m": 2.9, "returns_3m": -3.5, "returns_6m": -2.1, "returns_12m": 43.3, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 11, "sector_perf_1m": 1.9, "sector_vs_nifty_1m": 2.7, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "True", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.9, "volume_source": "delivery", "strong_close": false, "close_position": 70, "institutional_pass": true, "conditions_met": "3", "conditions_total": 6}, "trade_plan": {"entry_price": 259.4, "stop_loss": 241.24, "stop_pct": 7.000000000000001, "risk_per_share": 18.16, "shares": 550, "position_value": 142670, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 277.56, "reward_2r": 295.72, "reward_3r": 313.88}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -1.0}, "readiness": "RED"}, {"symbol": "BHARATFORG", "close": 1801.3, "sma50": 1720.08, "sma150": 1465.72, "sma200": 1401.35, "pct_from_high": 6.9, "pct_above_low": 97.1, "avg_volume": 1703780, "high_52w": 1935.5, "low_52w": 913.81, "contractions": [9.8, 8.1], "num_contractions": 2, "pivot": 1812.0, "pct_from_pivot": 0.6, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 11, "score": 56, "flags": ["EARNINGS_CLEAR", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "INSTITUTIONAL_BACKED"], "earnings_date": "2026-05-07", "days_to_earnings": 24, "earnings_flag": "CLEAR", "revenue_growth": 0.25, "earnings_growth": 0.218, "roe": 0.10170961082783783, "profit_margins": 0.069970004, "market_cap": 861181116416, "market_cap_category": "Large", "sector": "Consumer Cyclical", "industry": "Auto Parts", "delivery_pct_today": 38.47, "delivery_pct_avg_20d": 44.4, "delivery_pct_trend": "FALLING", "high_delivery_days": 1, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 38.6, "insider_pct": 46.6, "institutional_count": null, "returns_1m": -3.3, "returns_3m": 22.3, "returns_6m": 46.1, "returns_12m": 57.1, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 89, "sector_perf_1m": 1.9, "sector_vs_nifty_1m": 2.7, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "True", "rs_pass": true, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.9, "volume_source": "delivery", "strong_close": false, "close_position": 75, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 1812.0, "stop_loss": 1685.16, "stop_pct": 7.000000000000001, "risk_per_share": 126.84, "shares": 78, "position_value": 141336, "position_pct": 14.1, "risk_amount": 10000, "reward_1r": 1938.84, "reward_2r": 2065.68, "reward_3r": 2192.52}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": 0.1}, "readiness": "YELLOW"}, {"symbol": "AUBANK", "close": 979.05, "sma50": 949.97, "sma150": 903.78, "sma200": 870.03, "pct_from_high": 5.8, "pct_above_low": 90.9, "avg_volume": 3055989, "high_52w": 1039.2, "low_52w": 512.87, "contractions": [11.4, 9.1], "num_contractions": 2, "pivot": 980.15, "pct_from_pivot": 0.1, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 11, "score": 54, "flags": ["EARNINGS_WARNING", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST", "INSTITUTIONAL_BACKED"], "earnings_date": "2026-04-22", "days_to_earnings": 9, "earnings_flag": "WARNING", "revenue_growth": 0.278, "earnings_growth": 0.253, "roe": 0.1226780870082075, "profit_margins": 0.21372999, "market_cap": 731527315456, "market_cap_category": "Large", "sector": "Financial Services", "industry": "Banks - Regional", "delivery_pct_today": 45.1, "delivery_pct_avg_20d": 52.3, "delivery_pct_trend": "FLAT", "high_delivery_days": 4, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 44.1, "insider_pct": 31.3, "institutional_count": null, "returns_1m": 5.1, "returns_3m": -2.5, "returns_6m": 28.1, "returns_12m": 74.0, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 67, "sector_perf_1m": 5.8, "sector_vs_nifty_1m": 6.6, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 1.6, "entry": {"near_pivot": "True", "at_pivot": "True", "rs_pass": false, "earnings_pass": false, "volume_confirm": false, "last_vol_ratio": 0.9, "volume_source": "delivery", "strong_close": true, "close_position": 91, "institutional_pass": true, "conditions_met": "3", "conditions_total": 6}, "trade_plan": {"entry_price": 980.15, "stop_loss": 911.54, "stop_pct": 7.000000000000001, "risk_per_share": 68.61, "shares": 145, "position_value": 142122, "position_pct": 14.2, "risk_amount": 10000, "reward_1r": 1048.76, "reward_2r": 1117.37, "reward_3r": 1185.98}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -0.3}, "readiness": "RED"}, {"symbol": "ASTRAL", "close": 1625.1, "sma50": 1598.17, "sma150": 1493.82, "sma200": 1479.21, "pct_from_high": 8.1, "pct_above_low": 31.0, "avg_volume": 732172, "high_52w": 1768.7, "low_52w": 1240.7, "contractions": [13.2, 6.0], "num_contractions": 2, "pivot": 1678.0, "pct_from_pivot": 3.2, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 8, "score": 54, "flags": ["EARNINGS_UNKNOWN", "WEAK_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST"], "earnings_date": null, "days_to_earnings": null, "earnings_flag": "UNKNOWN", "revenue_growth": 0.103, "earnings_growth": -0.056, "roe": 0.14481614597732928, "profit_margins": 0.08162, "market_cap": 436583399424, "market_cap_category": "Large", "sector": "Industrials", "industry": "Building Products & Equipment", "delivery_pct_today": 35.54, "delivery_pct_avg_20d": 42.0, "delivery_pct_trend": "FLAT", "high_delivery_days": 0, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 26.5, "insider_pct": 54.3, "institutional_count": null, "returns_1m": 1.2, "returns_3m": 8.2, "returns_6m": 14.6, "returns_12m": 20.0, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 33, "sector_perf_1m": 2.3, "sector_vs_nifty_1m": 3.1, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 1.6, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.8, "volume_source": "delivery", "strong_close": true, "close_position": 75, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 1678.0, "stop_loss": 1560.54, "stop_pct": 7.000000000000001, "risk_per_share": 117.46, "shares": 85, "position_value": 142630, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 1795.46, "reward_2r": 1912.92, "reward_3r": 2030.38}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -0.3}, "readiness": "YELLOW"}, {"symbol": "INDIANB", "close": 966.5, "sma50": 910.25, "sma150": 837.53, "sma200": 789.32, "pct_from_high": 3.4, "pct_above_low": 91.4, "avg_volume": 1900643, "high_52w": 1000.0, "low_52w": 504.94, "contractions": [12.1, 9.4, 7.1], "num_contractions": 3, "pivot": 1000.0, "pct_from_pivot": 3.4, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 15, "score": 52, "flags": ["EARNINGS_CLEAR", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND"], "earnings_date": "2026-04-30", "days_to_earnings": 17, "earnings_flag": "CLEAR", "revenue_growth": 0.138, "earnings_growth": 0.081, "roe": 0.15752, "profit_margins": 0.33735, "market_cap": 1301840658432, "market_cap_category": "Large", "sector": "Financial Services", "industry": "Banks - Regional", "delivery_pct_today": 29.79, "delivery_pct_avg_20d": 39.4, "delivery_pct_trend": "FLAT", "high_delivery_days": 0, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 17.0, "insider_pct": 75.9, "institutional_count": null, "returns_1m": 7.5, "returns_3m": 11.8, "returns_6m": 27.6, "returns_12m": 80.5, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 83, "sector_perf_1m": 5.8, "sector_vs_nifty_1m": 6.6, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": true, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.8, "volume_source": "delivery", "strong_close": true, "close_position": 89, "institutional_pass": true, "conditions_met": "5", "conditions_total": 6}, "trade_plan": {"entry_price": 1000.0, "stop_loss": 930.0, "stop_pct": 7.000000000000001, "risk_per_share": 70.0, "shares": 142, "position_value": 142000, "position_pct": 14.2, "risk_amount": 10000, "reward_1r": 1070.0, "reward_2r": 1140.0, "reward_3r": 1210.0}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -0.1}, "readiness": "GREEN"}, {"symbol": "BAJAJ-AUTO", "close": 9816.0, "sma50": 9471.41, "sma150": 9214.3, "sma200": 9005.17, "pct_from_high": 3.6, "pct_above_low": 42.0, "avg_volume": 333806, "high_52w": 10187.0, "low_52w": 6914.12, "contractions": [14.2, 7.1], "num_contractions": 2, "pivot": 10187.0, "pct_from_pivot": 3.6, "volume_declining": "False", "vol_dry_up_ratio": 1.05, "pattern_bars": 22, "score": 51, "flags": ["EARNINGS_CLEAR", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST"], "earnings_date": "2026-05-06", "days_to_earnings": 23, "earnings_flag": "CLEAR", "revenue_growth": 0.231, "earnings_growth": 0.25, "roe": 0.20815550656261064, "profit_margins": 0.15052, "market_cap": 2741143076864, "market_cap_category": "Large", "sector": "Consumer Cyclical", "industry": "Auto Manufacturers", "delivery_pct_today": 35.35, "delivery_pct_avg_20d": 46.1, "delivery_pct_trend": "FLAT", "high_delivery_days": 0, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 15.8, "insider_pct": 60.0, "institutional_count": null, "returns_1m": 4.6, "returns_3m": 0.3, "returns_6m": 10.2, "returns_12m": 27.2, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 17, "sector_perf_1m": 1.9, "sector_vs_nifty_1m": 2.7, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 2.4, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.8, "volume_source": "delivery", "strong_close": true, "close_position": 77, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 10187.0, "stop_loss": 9473.91, "stop_pct": 7.000000000000001, "risk_per_share": 713.09, "shares": 14, "position_value": 142618, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 10900.09, "reward_2r": 11613.18, "reward_3r": 12326.27}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": 0.0}, "readiness": "YELLOW"}, {"symbol": "GVT&D", "close": 4093.6, "sma50": 3665.71, "sma150": 3185.96, "sma200": 3030.2, "pct_from_high": 5.8, "pct_above_low": 227.0, "avg_volume": 745479, "high_52w": 4344.0, "low_52w": 1251.71, "contractions": [15.4, 8.7], "num_contractions": 2, "pivot": 4344.0, "pct_from_pivot": 5.8, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 4, "score": 51, "flags": ["EARNINGS_UNKNOWN", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST"], "earnings_date": null, "days_to_earnings": null, "earnings_flag": "UNKNOWN", "revenue_growth": 0.584, "earnings_growth": 1.04, "roe": 0.34308644133753685, "profit_margins": 0.18665001, "market_cap": 1048152113152, "market_cap_category": "Large", "sector": "Industrials", "industry": "Specialty Industrial Machinery", "delivery_pct_today": 52.8, "delivery_pct_avg_20d": 52.8, "delivery_pct_trend": "FLAT", "high_delivery_days": 2, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 29.7, "insider_pct": 51.7, "institutional_count": null, "returns_1m": 8.6, "returns_3m": 29.9, "returns_6m": 32.1, "returns_12m": 180.6, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 94, "sector_perf_1m": 2.3, "sector_vs_nifty_1m": 3.1, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 1.6, "entry": {"near_pivot": "False", "at_pivot": "False", "rs_pass": true, "earnings_pass": true, "volume_confirm": true, "last_vol_ratio": 1.0, "volume_source": "delivery", "strong_close": false, "close_position": 57, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 4344.0, "stop_loss": 4039.92, "stop_pct": 7.000000000000001, "risk_per_share": 304.08, "shares": 32, "position_value": 139008, "position_pct": 13.9, "risk_amount": 10000, "reward_1r": 4648.08, "reward_2r": 4952.16, "reward_3r": 5256.24}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": 0.7}, "readiness": "YELLOW"}, {"symbol": "FEDERALBNK", "close": 288.2, "sma50": 280.93, "sma150": 250.98, "sma200": 239.18, "pct_from_high": 4.6, "pct_above_low": 58.3, "avg_volume": 8232265, "high_52w": 302.0, "low_52w": 182.05, "contractions": [15.3, 7.7, 6.1, 5.0], "num_contractions": 4, "pivot": 302.0, "pct_from_pivot": 4.6, "volume_declining": "False", "vol_dry_up_ratio": 1.4, "pattern_bars": 21, "score": 49, "flags": ["EARNINGS_CLEAR", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "INSTITUTIONAL_BACKED"], "earnings_date": "2026-04-29", "days_to_earnings": 16, "earnings_flag": "CLEAR", "revenue_growth": 0.151, "earnings_growth": 0.155, "roe": 0.12041249598561876, "profit_margins": 0.29051, "market_cap": 710030655488, "market_cap_category": "Large", "sector": "Financial Services", "industry": "Banks - Regional", "delivery_pct_today": 45.23, "delivery_pct_avg_20d": 52.6, "delivery_pct_trend": "FLAT", "high_delivery_days": 4, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 53.7, "insider_pct": 9.7, "institutional_count": null, "returns_1m": 5.5, "returns_3m": 11.5, "returns_6m": 44.7, "returns_12m": 49.3, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 78, "sector_perf_1m": 5.8, "sector_vs_nifty_1m": 6.6, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": true, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.9, "volume_source": "delivery", "strong_close": false, "close_position": 69, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 302.0, "stop_loss": 280.86, "stop_pct": 7.000000000000001, "risk_per_share": 21.14, "shares": 473, "position_value": 142846, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 323.14, "reward_2r": 344.28, "reward_3r": 365.42}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -1.2}, "readiness": "YELLOW"}, {"symbol": "LT", "close": 3954.3, "sma50": 3917.33, "sma150": 3898.7, "sma200": 3819.86, "pct_from_high": 10.9, "pct_above_low": 34.6, "avg_volume": 3673172, "high_52w": 4440.0, "low_52w": 2937.9, "contractions": [14.5, 9.6, 5.8, 5.4], "num_contractions": 4, "pivot": 4032.0, "pct_from_pivot": 1.9, "volume_declining": "False", "vol_dry_up_ratio": 0.82, "pattern_bars": 21, "score": 48, "flags": ["EARNINGS_CLEAR", "WEAK_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST", "INSTITUTIONAL_BACKED"], "earnings_date": "2026-05-07", "days_to_earnings": 24, "earnings_flag": "CLEAR", "revenue_growth": 0.111, "earnings_growth": -0.043, "roe": 0.15398103129774432, "profit_margins": 0.057490002, "market_cap": 5439662063616, "market_cap_category": "Large", "sector": "Industrials", "industry": "Engineering & Construction", "delivery_pct_today": 46.75, "delivery_pct_avg_20d": 55.1, "delivery_pct_trend": "FLAT", "high_delivery_days": 4, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 49.2, "insider_pct": 16.6, "institutional_count": null, "returns_1m": 2.9, "returns_3m": -4.9, "returns_6m": 6.0, "returns_12m": 16.7, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 6, "sector_perf_1m": 2.3, "sector_vs_nifty_1m": 3.1, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 2.2, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.8, "volume_source": "delivery", "strong_close": true, "close_position": 89, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 4032.0, "stop_loss": 3749.76, "stop_pct": 7.000000000000001, "risk_per_share": 282.24, "shares": 35, "position_value": 141120, "position_pct": 14.1, "risk_amount": 10000, "reward_1r": 4314.24, "reward_2r": 4596.48, "reward_3r": 4878.72}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -0.1}, "readiness": "YELLOW"}, {"symbol": "ABCAPITAL", "close": 337.45, "sma50": 331.14, "sma150": 328.39, "sma200": 314.43, "pct_from_high": 8.6, "pct_above_low": 99.2, "avg_volume": 7495496, "high_52w": 369.3, "low_52w": 169.43, "contractions": [11.3, 8.9, 6.8, 5.2], "num_contractions": 4, "pivot": 342.95, "pct_from_pivot": 1.6, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 15, "score": 46, "flags": ["EARNINGS_CLEAR", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "LOW_INSTITUTIONAL"], "earnings_date": "2026-05-13", "days_to_earnings": 30, "earnings_flag": "SAFE", "revenue_growth": 0.314, "earnings_growth": 0.327, "roe": 0.10965647779834096, "profit_margins": 0.11071999, "market_cap": 884853833728, "market_cap_category": "Large", "sector": "Financial Services", "industry": "Financial Conglomerates", "delivery_pct_today": 33.82, "delivery_pct_avg_20d": 40.5, "delivery_pct_trend": "FLAT", "high_delivery_days": 0, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 10.9, "insider_pct": 73.6, "institutional_count": null, "returns_1m": 4.1, "returns_3m": -6.5, "returns_6m": 11.2, "returns_12m": 74.5, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 39, "sector_perf_1m": 5.8, "sector_vs_nifty_1m": 6.6, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.8, "volume_source": "delivery", "strong_close": true, "close_position": 80, "institutional_pass": false, "conditions_met": "3", "conditions_total": 6}, "trade_plan": {"entry_price": 342.95, "stop_loss": 318.94, "stop_pct": 7.000000000000001, "risk_per_share": 24.01, "shares": 416, "position_value": 142667, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 366.96, "reward_2r": 390.97, "reward_3r": 414.98}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -1.3}, "readiness": "RED"}, {"symbol": "AXISBANK", "close": 1353.6, "sma50": 1304.09, "sma150": 1248.94, "sma200": 1215.61, "pct_from_high": 4.6, "pct_above_low": 31.2, "avg_volume": 7702698, "high_52w": 1418.3, "low_52w": 1031.47, "contractions": [16.0, 7.5, 7.2], "num_contractions": 3, "pivot": 1405.7, "pct_from_pivot": 3.7, "volume_declining": "False", "vol_dry_up_ratio": 1.15, "pattern_bars": 22, "score": 45, "flags": ["EARNINGS_WARNING", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST", "INSTITUTIONAL_BACKED"], "earnings_date": "2026-04-23", "days_to_earnings": 10, "earnings_flag": "WARNING", "revenue_growth": 0.057, "earnings_growth": 0.038, "roe": 0.13625, "profit_margins": 0.3417, "market_cap": 4209444126720, "market_cap_category": "Large", "sector": "Financial Services", "industry": "Banks - Regional", "delivery_pct_today": 56.09, "delivery_pct_avg_20d": 58.4, "delivery_pct_trend": "FLAT", "high_delivery_days": 10, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 69.5, "insider_pct": 2.6, "institutional_count": null, "returns_1m": 5.1, "returns_3m": 4.5, "returns_6m": 14.1, "returns_12m": 24.3, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 28, "sector_perf_1m": 5.8, "sector_vs_nifty_1m": 6.6, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 1.7, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": false, "volume_confirm": false, "last_vol_ratio": 1.0, "volume_source": "delivery", "strong_close": false, "close_position": 74, "institutional_pass": true, "conditions_met": "2", "conditions_total": 6}, "trade_plan": {"entry_price": 1405.7, "stop_loss": 1307.3, "stop_pct": 7.000000000000001, "risk_per_share": 98.4, "shares": 101, "position_value": 141976, "position_pct": 14.2, "risk_amount": 10000, "reward_1r": 1504.1, "reward_2r": 1602.5, "reward_3r": 1700.9}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": 0.2}, "readiness": "RED"}, {"symbol": "JINDALSTEL", "close": 1218.5, "sma50": 1179.38, "sma150": 1085.65, "sma200": 1055.69, "pct_from_high": 4.2, "pct_above_low": 58.6, "avg_volume": 1520761, "high_52w": 1272.1, "low_52w": 768.48, "contractions": [11.0, 8.8, 7.9, 5.6], "num_contractions": 4, "pivot": 1272.1, "pct_from_pivot": 4.2, "volume_declining": "False", "vol_dry_up_ratio": 0.9, "pattern_bars": 22, "score": 45, "flags": ["EARNINGS_CLEAR", "WEAK_FUNDAMENTALS", "SECTOR_TAILWIND"], "earnings_date": "2026-04-29", "days_to_earnings": 16, "earnings_flag": "CLEAR", "revenue_growth": 0.109, "earnings_growth": -0.801, "roe": 0.059598117023928004, "profit_margins": 0.03951, "market_cap": 1239809261568, "market_cap_category": "Large", "sector": "Basic Materials", "industry": "Steel", "delivery_pct_today": 28.8, "delivery_pct_avg_20d": 41.4, "delivery_pct_trend": "FLAT", "high_delivery_days": 0, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 20.4, "insider_pct": 28.3, "institutional_count": null, "returns_1m": 6.5, "returns_3m": 13.4, "returns_6m": 17.9, "returns_12m": 34.9, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 56, "sector_perf_1m": 7.3, "sector_vs_nifty_1m": 8.1, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.7, "volume_source": "delivery", "strong_close": false, "close_position": 74, "institutional_pass": true, "conditions_met": "3", "conditions_total": 6}, "trade_plan": {"entry_price": 1272.1, "stop_loss": 1183.05, "stop_pct": 7.000000000000001, "risk_per_share": 89.05, "shares": 112, "position_value": 142475, "position_pct": 14.2, "risk_amount": 10000, "reward_1r": 1361.15, "reward_2r": 1450.2, "reward_3r": 1539.25}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -0.1}, "readiness": "RED"}, {"symbol": "TATASTEEL", "close": 206.39, "sma50": 199.52, "sma150": 182.75, "sma200": 176.95, "pct_from_high": 4.6, "pct_above_low": 68.6, "avg_volume": 35406356, "high_52w": 216.45, "low_52w": 122.44, "contractions": [13.6, 8.9, 6.5, 6.1], "num_contractions": 4, "pivot": 216.45, "pct_from_pivot": 4.6, "volume_declining": "False", "vol_dry_up_ratio": 1.06, "pattern_bars": 23, "score": 43, "flags": ["EARNINGS_CLEAR", "WEAK_FUNDAMENTALS", "SECTOR_TAILWIND", "INSTITUTIONAL_BACKED"], "earnings_date": "2026-05-13", "days_to_earnings": 30, "earnings_flag": "SAFE", "revenue_growth": 0.063, "earnings_growth": 7.308, "roe": 0.03751808579238503, "profit_margins": 0.04073, "market_cap": 2574064812032, "market_cap_category": "Large", "sector": "Basic Materials", "industry": "Steel", "delivery_pct_today": 29.03, "delivery_pct_avg_20d": 41.2, "delivery_pct_trend": "FLAT", "high_delivery_days": 0, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 33.7, "insider_pct": 35.5, "institutional_count": null, "returns_1m": 8.1, "returns_3m": 12.3, "returns_6m": 20.4, "returns_12m": 37.5, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 61, "sector_perf_1m": 7.3, "sector_vs_nifty_1m": 8.1, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.7, "volume_source": "delivery", "strong_close": true, "close_position": 89, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 216.45, "stop_loss": 201.3, "stop_pct": 7.000000000000001, "risk_per_share": 15.15, "shares": 660, "position_value": 142857, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 231.6, "reward_2r": 246.75, "reward_3r": 261.9}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -0.1}, "readiness": "YELLOW"}, {"symbol": "OIL", "close": 477.15, "sma50": 476.15, "sma150": 431.68, "sma200": 428.59, "pct_from_high": 7.5, "pct_above_low": 50.8, "avg_volume": 7476213, "high_52w": 516.11, "low_52w": 316.35, "contractions": [8.4, 7.2, 5.1], "num_contractions": 3, "pivot": 503.0, "pct_from_pivot": 5.1, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 11, "score": 39, "flags": ["EARNINGS_UNKNOWN", "WEAK_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST", "DELIVERY_RISING"], "earnings_date": null, "days_to_earnings": null, "earnings_flag": "UNKNOWN", "revenue_growth": -0.001, "earnings_growth": -0.107, "roe": 0.13163010079625911, "profit_margins": 0.17412001, "market_cap": 776410234880, "market_cap_category": "Large", "sector": "Energy", "industry": "Oil & Gas Integrated", "delivery_pct_today": 22.7, "delivery_pct_avg_20d": 34.6, "delivery_pct_trend": "RISING", "high_delivery_days": 0, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 22.8, "insider_pct": 66.6, "institutional_count": null, "returns_1m": 0.7, "returns_3m": 15.8, "returns_6m": 15.6, "returns_12m": 27.0, "nifty_1m": -0.8, "nifty_3m": -8.9, "nifty_6m": -4.9, "nifty_12m": 2.2, "rs_rating": 50, "sector_perf_1m": 3.4, "sector_vs_nifty_1m": 4.2, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 2.4, "entry": {"near_pivot": "False", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.7, "volume_source": "delivery", "strong_close": false, "close_position": 67, "institutional_pass": true, "conditions_met": "2", "conditions_total": 6}, "trade_plan": {"entry_price": 503.0, "stop_loss": 467.79, "stop_pct": 7.000000000000001, "risk_per_share": 35.21, "shares": 284, "position_value": 142852, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 538.21, "reward_2r": 573.42, "reward_3r": 608.63}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": 1.2}, "readiness": "RED"}];
+const D = [{"symbol": "MCX", "close": 2765.6, "sma50": 2481.11, "sma150": 2112.9, "sma200": 1992.78, "pct_from_high": 0.4, "pct_above_low": 206.1, "avg_volume": 4188171, "high_52w": 2776.4, "low_52w": 903.55, "contractions": [16.4, 6.1], "num_contractions": 2, "pivot": 2702.7, "pct_from_pivot": -2.3, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 7, "score": 68, "flags": ["EARNINGS_CLEAR", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "INSTITUTIONAL_BACKED"], "earnings_date": "2026-05-07", "days_to_earnings": 23, "earnings_flag": "CLEAR", "revenue_growth": 1.149, "earnings_growth": 1.506, "roe": 0.2971980471237529, "profit_margins": 0.51717997, "market_cap": 703884230656, "market_cap_category": "Large", "sector": "Financial Services", "industry": "Financial Data & Stock Exchanges", "delivery_pct_today": 37.37, "delivery_pct_avg_20d": 40.4, "delivery_pct_trend": "FALLING", "high_delivery_days": 1, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 51.5, "insider_pct": 15.0, "institutional_count": null, "returns_1m": 7.3, "returns_3m": 20.0, "returns_6m": 68.4, "returns_12m": 160.2, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 100, "sector_perf_1m": 5.8, "sector_vs_nifty_1m": 7.4, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "False", "at_pivot": "False", "rs_pass": true, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.9, "volume_source": "delivery", "strong_close": true, "close_position": 93, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 2702.7, "stop_loss": 2513.51, "stop_pct": 7.000000000000001, "risk_per_share": 189.19, "shares": 52, "position_value": 140540, "position_pct": 14.1, "risk_amount": 10000, "reward_1r": 2891.89, "reward_2r": 3081.08, "reward_3r": 3270.27}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": 3.6}, "readiness": "YELLOW"}, {"symbol": "ONGC", "close": 287.55, "sma50": 271.82, "sma150": 246.59, "sma200": 241.95, "pct_from_high": 1.9, "pct_above_low": 47.9, "avg_volume": 25463477, "high_52w": 293.0, "low_52w": 194.47, "contractions": [10.6, 6.2], "num_contractions": 2, "pivot": 293.0, "pct_from_pivot": 1.9, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 19, "score": 62, "flags": ["EARNINGS_UNKNOWN", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST"], "earnings_date": null, "days_to_earnings": null, "earnings_flag": "UNKNOWN", "revenue_growth": 0.008, "earnings_growth": 0.162, "roe": 0.10547860701194696, "profit_margins": 0.057979997, "market_cap": 3617459273728, "market_cap_category": "Large", "sector": "Energy", "industry": "Oil & Gas Integrated", "delivery_pct_today": 23.66, "delivery_pct_avg_20d": 45.0, "delivery_pct_trend": "FALLING", "high_delivery_days": 1, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 22.9, "insider_pct": 69.2, "institutional_count": null, "returns_1m": 6.2, "returns_3m": 23.1, "returns_6m": 22.9, "returns_12m": 24.6, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 72, "sector_perf_1m": 3.4, "sector_vs_nifty_1m": 5.0, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 1.7, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": true, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.5, "volume_source": "delivery", "strong_close": false, "close_position": 70, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 293.0, "stop_loss": 272.49, "stop_pct": 7.000000000000001, "risk_per_share": 20.51, "shares": 487, "position_value": 142691, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 313.51, "reward_2r": 334.02, "reward_3r": 354.53}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": 0.4}, "readiness": "YELLOW"}, {"symbol": "TVSMOTOR", "close": 3738.1, "sma50": 3663.3, "sma150": 3594.39, "sma200": 3434.87, "pct_from_high": 5.5, "pct_above_low": 68.9, "avg_volume": 930280, "high_52w": 3956.17, "low_52w": 2213.36, "contractions": [13.5, 5.5], "num_contractions": 2, "pivot": 3779.89, "pct_from_pivot": 1.1, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 9, "score": 62, "flags": ["EARNINGS_CLEAR", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST"], "earnings_date": "2026-04-28", "days_to_earnings": 14, "earnings_flag": "CLEAR", "revenue_growth": 0.317, "earnings_growth": 0.487, "roe": 0.2629025164111212, "profit_margins": 0.055159997, "market_cap": 1776443195392, "market_cap_category": "Large", "sector": "Consumer Cyclical", "industry": "Auto Manufacturers", "delivery_pct_today": 40.47, "delivery_pct_avg_20d": 54.3, "delivery_pct_trend": "FLAT", "high_delivery_days": 4, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 26.1, "insider_pct": 52.1, "institutional_count": null, "returns_1m": 3.4, "returns_3m": -2.3, "returns_6m": 6.8, "returns_12m": 51.5, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 22, "sector_perf_1m": 1.9, "sector_vs_nifty_1m": 3.5, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 1.7, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.7, "volume_source": "delivery", "strong_close": false, "close_position": 40, "institutional_pass": true, "conditions_met": "3", "conditions_total": 6}, "trade_plan": {"entry_price": 3779.89, "stop_loss": 3515.3, "stop_pct": 7.000000000000001, "risk_per_share": 264.59, "shares": 37, "position_value": 139856, "position_pct": 14.0, "risk_amount": 10000, "reward_1r": 4044.48, "reward_2r": 4309.07, "reward_3r": 4573.66}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -2.7}, "readiness": "RED"}, {"symbol": "BEL", "close": 441.55, "sma50": 436.85, "sma150": 415.23, "sma200": 409.86, "pct_from_high": 6.7, "pct_above_low": 73.5, "avg_volume": 19742473, "high_52w": 473.45, "low_52w": 254.52, "contractions": [10.8, 5.3], "num_contractions": 2, "pivot": 447.75, "pct_from_pivot": 1.4, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 9, "score": 60, "flags": ["EARNINGS_UNKNOWN", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND"], "earnings_date": null, "days_to_earnings": null, "earnings_flag": "UNKNOWN", "revenue_growth": 0.24, "earnings_growth": 0.207, "roe": 0.26641981106334317, "profit_margins": 0.22475, "market_cap": 3227632795648, "market_cap_category": "Large", "sector": "Industrials", "industry": "Aerospace & Defense", "delivery_pct_today": 45.07, "delivery_pct_avg_20d": 43.8, "delivery_pct_trend": "FLAT", "high_delivery_days": 1, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 25.5, "insider_pct": 53.2, "institutional_count": null, "returns_1m": -3.5, "returns_3m": 6.7, "returns_6m": 8.1, "returns_12m": 54.6, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 44, "sector_perf_1m": 2.3, "sector_vs_nifty_1m": 3.9, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 1.0, "volume_source": "delivery", "strong_close": false, "close_position": 66, "institutional_pass": true, "conditions_met": "3", "conditions_total": 6}, "trade_plan": {"entry_price": 447.75, "stop_loss": 416.41, "stop_pct": 7.000000000000001, "risk_per_share": 31.34, "shares": 319, "position_value": 142832, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 479.09, "reward_2r": 510.43, "reward_3r": 541.77}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -0.2}, "readiness": "RED"}, {"symbol": "NYKAA", "close": 256.96, "sma50": 254.53, "sma150": 253.55, "sma200": 243.74, "pct_from_high": 10.0, "pct_above_low": 54.8, "avg_volume": 6569142, "high_52w": 285.6, "low_52w": 165.97, "contractions": [10.1, 5.1], "num_contractions": 2, "pivot": 259.4, "pct_from_pivot": 0.9, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 8, "score": 59, "flags": ["EARNINGS_UNKNOWN", "WEAK_FUNDAMENTALS", "SECTOR_TAILWIND", "INSTITUTIONAL_BACKED"], "earnings_date": null, "days_to_earnings": null, "earnings_flag": "UNKNOWN", "revenue_growth": 0.267, "earnings_growth": 1.444, "roe": 0.05078076970367638, "profit_margins": 0.01498, "market_cap": 736041435136, "market_cap_category": "Large", "sector": "Consumer Cyclical", "industry": "Internet Retail", "delivery_pct_today": 45.58, "delivery_pct_avg_20d": 50.1, "delivery_pct_trend": "FLAT", "high_delivery_days": 2, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 31.2, "insider_pct": 57.3, "institutional_count": null, "returns_1m": 2.9, "returns_3m": -3.5, "returns_6m": -2.1, "returns_12m": 43.3, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 11, "sector_perf_1m": 1.9, "sector_vs_nifty_1m": 3.5, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "True", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.9, "volume_source": "delivery", "strong_close": false, "close_position": 70, "institutional_pass": true, "conditions_met": "3", "conditions_total": 6}, "trade_plan": {"entry_price": 259.4, "stop_loss": 241.24, "stop_pct": 7.000000000000001, "risk_per_share": 18.16, "shares": 550, "position_value": 142670, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 277.56, "reward_2r": 295.72, "reward_3r": 313.88}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -1.0}, "readiness": "RED"}, {"symbol": "BHARATFORG", "close": 1801.3, "sma50": 1720.08, "sma150": 1465.72, "sma200": 1401.35, "pct_from_high": 6.9, "pct_above_low": 97.1, "avg_volume": 1703780, "high_52w": 1935.5, "low_52w": 913.81, "contractions": [9.8, 8.1], "num_contractions": 2, "pivot": 1812.0, "pct_from_pivot": 0.6, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 11, "score": 56, "flags": ["EARNINGS_CLEAR", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "INSTITUTIONAL_BACKED"], "earnings_date": "2026-05-07", "days_to_earnings": 23, "earnings_flag": "CLEAR", "revenue_growth": 0.25, "earnings_growth": 0.218, "roe": 0.10170961082783783, "profit_margins": 0.069970004, "market_cap": 861181116416, "market_cap_category": "Large", "sector": "Consumer Cyclical", "industry": "Auto Parts", "delivery_pct_today": 38.47, "delivery_pct_avg_20d": 44.4, "delivery_pct_trend": "FALLING", "high_delivery_days": 1, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 38.6, "insider_pct": 46.6, "institutional_count": null, "returns_1m": -3.3, "returns_3m": 22.3, "returns_6m": 46.1, "returns_12m": 57.1, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 89, "sector_perf_1m": 1.9, "sector_vs_nifty_1m": 3.5, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "True", "rs_pass": true, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.9, "volume_source": "delivery", "strong_close": false, "close_position": 75, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 1812.0, "stop_loss": 1685.16, "stop_pct": 7.000000000000001, "risk_per_share": 126.84, "shares": 78, "position_value": 141336, "position_pct": 14.1, "risk_amount": 10000, "reward_1r": 1938.84, "reward_2r": 2065.68, "reward_3r": 2192.52}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": 0.1}, "readiness": "YELLOW"}, {"symbol": "AUBANK", "close": 979.05, "sma50": 949.97, "sma150": 903.78, "sma200": 870.03, "pct_from_high": 5.8, "pct_above_low": 90.9, "avg_volume": 3055989, "high_52w": 1039.2, "low_52w": 512.87, "contractions": [11.4, 9.1], "num_contractions": 2, "pivot": 980.15, "pct_from_pivot": 0.1, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 11, "score": 54, "flags": ["EARNINGS_WARNING", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST", "INSTITUTIONAL_BACKED"], "earnings_date": "2026-04-22", "days_to_earnings": 8, "earnings_flag": "WARNING", "revenue_growth": 0.278, "earnings_growth": 0.253, "roe": 0.1226780870082075, "profit_margins": 0.21372999, "market_cap": 731527315456, "market_cap_category": "Large", "sector": "Financial Services", "industry": "Banks - Regional", "delivery_pct_today": 45.1, "delivery_pct_avg_20d": 52.3, "delivery_pct_trend": "FLAT", "high_delivery_days": 4, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 44.1, "insider_pct": 31.3, "institutional_count": null, "returns_1m": 5.1, "returns_3m": -2.5, "returns_6m": 28.1, "returns_12m": 74.0, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 67, "sector_perf_1m": 5.8, "sector_vs_nifty_1m": 7.4, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 1.6, "entry": {"near_pivot": "True", "at_pivot": "True", "rs_pass": false, "earnings_pass": false, "volume_confirm": false, "last_vol_ratio": 0.9, "volume_source": "delivery", "strong_close": true, "close_position": 91, "institutional_pass": true, "conditions_met": "3", "conditions_total": 6}, "trade_plan": {"entry_price": 980.15, "stop_loss": 911.54, "stop_pct": 7.000000000000001, "risk_per_share": 68.61, "shares": 145, "position_value": 142122, "position_pct": 14.2, "risk_amount": 10000, "reward_1r": 1048.76, "reward_2r": 1117.37, "reward_3r": 1185.98}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -0.3}, "readiness": "RED"}, {"symbol": "ASTRAL", "close": 1625.1, "sma50": 1598.17, "sma150": 1493.82, "sma200": 1479.21, "pct_from_high": 8.1, "pct_above_low": 31.0, "avg_volume": 732172, "high_52w": 1768.7, "low_52w": 1240.7, "contractions": [13.2, 6.0], "num_contractions": 2, "pivot": 1678.0, "pct_from_pivot": 3.2, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 8, "score": 54, "flags": ["EARNINGS_UNKNOWN", "WEAK_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST"], "earnings_date": null, "days_to_earnings": null, "earnings_flag": "UNKNOWN", "revenue_growth": 0.103, "earnings_growth": -0.056, "roe": 0.14481614597732928, "profit_margins": 0.08162, "market_cap": 436583399424, "market_cap_category": "Large", "sector": "Industrials", "industry": "Building Products & Equipment", "delivery_pct_today": 35.54, "delivery_pct_avg_20d": 42.0, "delivery_pct_trend": "FLAT", "high_delivery_days": 0, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 26.5, "insider_pct": 54.3, "institutional_count": null, "returns_1m": 1.2, "returns_3m": 8.2, "returns_6m": 14.6, "returns_12m": 20.0, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 33, "sector_perf_1m": 2.3, "sector_vs_nifty_1m": 3.9, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 1.6, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.8, "volume_source": "delivery", "strong_close": true, "close_position": 75, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 1678.0, "stop_loss": 1560.54, "stop_pct": 7.000000000000001, "risk_per_share": 117.46, "shares": 85, "position_value": 142630, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 1795.46, "reward_2r": 1912.92, "reward_3r": 2030.38}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -0.3}, "readiness": "YELLOW"}, {"symbol": "INDIANB", "close": 966.5, "sma50": 910.25, "sma150": 837.53, "sma200": 789.32, "pct_from_high": 3.4, "pct_above_low": 91.4, "avg_volume": 1900643, "high_52w": 1000.0, "low_52w": 504.94, "contractions": [12.1, 9.4, 7.1], "num_contractions": 3, "pivot": 1000.0, "pct_from_pivot": 3.4, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 15, "score": 52, "flags": ["EARNINGS_CLEAR", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND"], "earnings_date": "2026-04-30", "days_to_earnings": 16, "earnings_flag": "CLEAR", "revenue_growth": 0.138, "earnings_growth": 0.081, "roe": 0.15752, "profit_margins": 0.33735, "market_cap": 1301840658432, "market_cap_category": "Large", "sector": "Financial Services", "industry": "Banks - Regional", "delivery_pct_today": 29.79, "delivery_pct_avg_20d": 39.4, "delivery_pct_trend": "FLAT", "high_delivery_days": 0, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 17.0, "insider_pct": 75.9, "institutional_count": null, "returns_1m": 7.5, "returns_3m": 11.8, "returns_6m": 27.6, "returns_12m": 80.5, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 83, "sector_perf_1m": 5.8, "sector_vs_nifty_1m": 7.4, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": true, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.8, "volume_source": "delivery", "strong_close": true, "close_position": 89, "institutional_pass": true, "conditions_met": "5", "conditions_total": 6}, "trade_plan": {"entry_price": 1000.0, "stop_loss": 930.0, "stop_pct": 7.000000000000001, "risk_per_share": 70.0, "shares": 142, "position_value": 142000, "position_pct": 14.2, "risk_amount": 10000, "reward_1r": 1070.0, "reward_2r": 1140.0, "reward_3r": 1210.0}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -0.1}, "readiness": "GREEN"}, {"symbol": "BAJAJ-AUTO", "close": 9816.0, "sma50": 9471.41, "sma150": 9214.3, "sma200": 9005.17, "pct_from_high": 3.6, "pct_above_low": 42.0, "avg_volume": 333806, "high_52w": 10187.0, "low_52w": 6914.12, "contractions": [14.2, 7.1], "num_contractions": 2, "pivot": 10187.0, "pct_from_pivot": 3.6, "volume_declining": "False", "vol_dry_up_ratio": 1.05, "pattern_bars": 22, "score": 51, "flags": ["EARNINGS_CLEAR", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST"], "earnings_date": "2026-05-06", "days_to_earnings": 22, "earnings_flag": "CLEAR", "revenue_growth": 0.231, "earnings_growth": 0.25, "roe": 0.20815550656261064, "profit_margins": 0.15052, "market_cap": 2741143076864, "market_cap_category": "Large", "sector": "Consumer Cyclical", "industry": "Auto Manufacturers", "delivery_pct_today": 35.35, "delivery_pct_avg_20d": 46.1, "delivery_pct_trend": "FLAT", "high_delivery_days": 0, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 15.8, "insider_pct": 60.0, "institutional_count": null, "returns_1m": 4.6, "returns_3m": 0.3, "returns_6m": 10.2, "returns_12m": 27.2, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 17, "sector_perf_1m": 1.9, "sector_vs_nifty_1m": 3.5, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 2.4, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.8, "volume_source": "delivery", "strong_close": true, "close_position": 77, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 10187.0, "stop_loss": 9473.91, "stop_pct": 7.000000000000001, "risk_per_share": 713.09, "shares": 14, "position_value": 142618, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 10900.09, "reward_2r": 11613.18, "reward_3r": 12326.27}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": 0.0}, "readiness": "YELLOW"}, {"symbol": "GVT&D", "close": 4093.6, "sma50": 3665.71, "sma150": 3185.96, "sma200": 3030.2, "pct_from_high": 5.8, "pct_above_low": 227.0, "avg_volume": 745479, "high_52w": 4344.0, "low_52w": 1251.71, "contractions": [15.4, 8.7], "num_contractions": 2, "pivot": 4344.0, "pct_from_pivot": 5.8, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 4, "score": 51, "flags": ["EARNINGS_UNKNOWN", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST"], "earnings_date": null, "days_to_earnings": null, "earnings_flag": "UNKNOWN", "revenue_growth": 0.584, "earnings_growth": 1.04, "roe": 0.34308644133753685, "profit_margins": 0.18665001, "market_cap": 1048152113152, "market_cap_category": "Large", "sector": "Industrials", "industry": "Specialty Industrial Machinery", "delivery_pct_today": 52.8, "delivery_pct_avg_20d": 52.8, "delivery_pct_trend": "FLAT", "high_delivery_days": 2, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 29.7, "insider_pct": 51.7, "institutional_count": null, "returns_1m": 8.6, "returns_3m": 29.9, "returns_6m": 32.1, "returns_12m": 180.6, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 94, "sector_perf_1m": 2.3, "sector_vs_nifty_1m": 3.9, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 1.6, "entry": {"near_pivot": "False", "at_pivot": "False", "rs_pass": true, "earnings_pass": true, "volume_confirm": true, "last_vol_ratio": 1.0, "volume_source": "delivery", "strong_close": false, "close_position": 57, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 4344.0, "stop_loss": 4039.92, "stop_pct": 7.000000000000001, "risk_per_share": 304.08, "shares": 32, "position_value": 139008, "position_pct": 13.9, "risk_amount": 10000, "reward_1r": 4648.08, "reward_2r": 4952.16, "reward_3r": 5256.24}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": 0.7}, "readiness": "YELLOW"}, {"symbol": "FEDERALBNK", "close": 288.2, "sma50": 280.93, "sma150": 250.98, "sma200": 239.18, "pct_from_high": 4.6, "pct_above_low": 58.3, "avg_volume": 8232265, "high_52w": 302.0, "low_52w": 182.05, "contractions": [15.3, 7.7, 6.1, 5.0], "num_contractions": 4, "pivot": 302.0, "pct_from_pivot": 4.6, "volume_declining": "False", "vol_dry_up_ratio": 1.4, "pattern_bars": 21, "score": 49, "flags": ["EARNINGS_CLEAR", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "INSTITUTIONAL_BACKED"], "earnings_date": "2026-04-29", "days_to_earnings": 15, "earnings_flag": "CLEAR", "revenue_growth": 0.151, "earnings_growth": 0.155, "roe": 0.12041249598561876, "profit_margins": 0.29051, "market_cap": 710030655488, "market_cap_category": "Large", "sector": "Financial Services", "industry": "Banks - Regional", "delivery_pct_today": 45.23, "delivery_pct_avg_20d": 52.6, "delivery_pct_trend": "FLAT", "high_delivery_days": 4, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 53.7, "insider_pct": 9.7, "institutional_count": null, "returns_1m": 5.5, "returns_3m": 11.5, "returns_6m": 44.7, "returns_12m": 49.3, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 78, "sector_perf_1m": 5.8, "sector_vs_nifty_1m": 7.4, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": true, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.9, "volume_source": "delivery", "strong_close": false, "close_position": 69, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 302.0, "stop_loss": 280.86, "stop_pct": 7.000000000000001, "risk_per_share": 21.14, "shares": 473, "position_value": 142846, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 323.14, "reward_2r": 344.28, "reward_3r": 365.42}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -1.2}, "readiness": "YELLOW"}, {"symbol": "LT", "close": 3954.3, "sma50": 3917.33, "sma150": 3898.7, "sma200": 3819.86, "pct_from_high": 10.9, "pct_above_low": 34.6, "avg_volume": 3673172, "high_52w": 4440.0, "low_52w": 2937.9, "contractions": [14.5, 9.6, 5.8, 5.4], "num_contractions": 4, "pivot": 4032.0, "pct_from_pivot": 1.9, "volume_declining": "False", "vol_dry_up_ratio": 0.82, "pattern_bars": 21, "score": 48, "flags": ["EARNINGS_CLEAR", "WEAK_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST", "INSTITUTIONAL_BACKED"], "earnings_date": "2026-05-07", "days_to_earnings": 23, "earnings_flag": "CLEAR", "revenue_growth": 0.111, "earnings_growth": -0.043, "roe": 0.15398103129774432, "profit_margins": 0.057490002, "market_cap": 5439662063616, "market_cap_category": "Large", "sector": "Industrials", "industry": "Engineering & Construction", "delivery_pct_today": 46.75, "delivery_pct_avg_20d": 55.1, "delivery_pct_trend": "FLAT", "high_delivery_days": 4, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 49.2, "insider_pct": 16.6, "institutional_count": null, "returns_1m": 2.9, "returns_3m": -4.9, "returns_6m": 6.0, "returns_12m": 16.7, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 6, "sector_perf_1m": 2.3, "sector_vs_nifty_1m": 3.9, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 2.2, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.8, "volume_source": "delivery", "strong_close": true, "close_position": 89, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 4032.0, "stop_loss": 3749.76, "stop_pct": 7.000000000000001, "risk_per_share": 282.24, "shares": 35, "position_value": 141120, "position_pct": 14.1, "risk_amount": 10000, "reward_1r": 4314.24, "reward_2r": 4596.48, "reward_3r": 4878.72}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -0.1}, "readiness": "YELLOW"}, {"symbol": "ABCAPITAL", "close": 337.45, "sma50": 331.14, "sma150": 328.39, "sma200": 314.43, "pct_from_high": 8.6, "pct_above_low": 99.2, "avg_volume": 7495496, "high_52w": 369.3, "low_52w": 169.43, "contractions": [11.3, 8.9, 6.8, 5.2], "num_contractions": 4, "pivot": 342.95, "pct_from_pivot": 1.6, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 15, "score": 46, "flags": ["EARNINGS_CLEAR", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "LOW_INSTITUTIONAL"], "earnings_date": "2026-05-13", "days_to_earnings": 29, "earnings_flag": "CLEAR", "revenue_growth": 0.314, "earnings_growth": 0.327, "roe": 0.10965647779834096, "profit_margins": 0.11071999, "market_cap": 884853833728, "market_cap_category": "Large", "sector": "Financial Services", "industry": "Financial Conglomerates", "delivery_pct_today": 33.82, "delivery_pct_avg_20d": 40.5, "delivery_pct_trend": "FLAT", "high_delivery_days": 0, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 10.9, "insider_pct": 73.6, "institutional_count": null, "returns_1m": 4.1, "returns_3m": -6.5, "returns_6m": 11.2, "returns_12m": 74.5, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 39, "sector_perf_1m": 5.8, "sector_vs_nifty_1m": 7.4, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.8, "volume_source": "delivery", "strong_close": true, "close_position": 80, "institutional_pass": false, "conditions_met": "3", "conditions_total": 6}, "trade_plan": {"entry_price": 342.95, "stop_loss": 318.94, "stop_pct": 7.000000000000001, "risk_per_share": 24.01, "shares": 416, "position_value": 142667, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 366.96, "reward_2r": 390.97, "reward_3r": 414.98}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -1.3}, "readiness": "RED"}, {"symbol": "AXISBANK", "close": 1353.6, "sma50": 1304.09, "sma150": 1248.94, "sma200": 1215.61, "pct_from_high": 4.6, "pct_above_low": 31.2, "avg_volume": 7702698, "high_52w": 1418.3, "low_52w": 1031.47, "contractions": [16.0, 7.5, 7.2], "num_contractions": 3, "pivot": 1405.7, "pct_from_pivot": 3.7, "volume_declining": "False", "vol_dry_up_ratio": 1.15, "pattern_bars": 22, "score": 45, "flags": ["EARNINGS_WARNING", "STRONG_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST", "INSTITUTIONAL_BACKED"], "earnings_date": "2026-04-23", "days_to_earnings": 9, "earnings_flag": "WARNING", "revenue_growth": 0.057, "earnings_growth": 0.038, "roe": 0.13625, "profit_margins": 0.3417, "market_cap": 4209444126720, "market_cap_category": "Large", "sector": "Financial Services", "industry": "Banks - Regional", "delivery_pct_today": 56.09, "delivery_pct_avg_20d": 58.4, "delivery_pct_trend": "FLAT", "high_delivery_days": 10, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 69.5, "insider_pct": 2.6, "institutional_count": null, "returns_1m": 5.1, "returns_3m": 4.5, "returns_6m": 14.1, "returns_12m": 24.3, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 28, "sector_perf_1m": 5.8, "sector_vs_nifty_1m": 7.4, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 1.7, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": false, "volume_confirm": false, "last_vol_ratio": 1.0, "volume_source": "delivery", "strong_close": false, "close_position": 74, "institutional_pass": true, "conditions_met": "2", "conditions_total": 6}, "trade_plan": {"entry_price": 1405.7, "stop_loss": 1307.3, "stop_pct": 7.000000000000001, "risk_per_share": 98.4, "shares": 101, "position_value": 141976, "position_pct": 14.2, "risk_amount": 10000, "reward_1r": 1504.1, "reward_2r": 1602.5, "reward_3r": 1700.9}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": 0.2}, "readiness": "RED"}, {"symbol": "JINDALSTEL", "close": 1218.5, "sma50": 1179.38, "sma150": 1085.65, "sma200": 1055.69, "pct_from_high": 4.2, "pct_above_low": 58.6, "avg_volume": 1520761, "high_52w": 1272.1, "low_52w": 768.48, "contractions": [11.0, 8.8, 7.9, 5.6], "num_contractions": 4, "pivot": 1272.1, "pct_from_pivot": 4.2, "volume_declining": "False", "vol_dry_up_ratio": 0.9, "pattern_bars": 22, "score": 45, "flags": ["EARNINGS_CLEAR", "WEAK_FUNDAMENTALS", "SECTOR_TAILWIND"], "earnings_date": "2026-04-29", "days_to_earnings": 15, "earnings_flag": "CLEAR", "revenue_growth": 0.109, "earnings_growth": -0.801, "roe": 0.059598117023928004, "profit_margins": 0.03951, "market_cap": 1239809261568, "market_cap_category": "Large", "sector": "Basic Materials", "industry": "Steel", "delivery_pct_today": 28.8, "delivery_pct_avg_20d": 41.4, "delivery_pct_trend": "FLAT", "high_delivery_days": 0, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 20.4, "insider_pct": 28.3, "institutional_count": null, "returns_1m": 6.5, "returns_3m": 13.4, "returns_6m": 17.9, "returns_12m": 34.9, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 56, "sector_perf_1m": 7.3, "sector_vs_nifty_1m": 8.9, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.7, "volume_source": "delivery", "strong_close": false, "close_position": 74, "institutional_pass": true, "conditions_met": "3", "conditions_total": 6}, "trade_plan": {"entry_price": 1272.1, "stop_loss": 1183.05, "stop_pct": 7.000000000000001, "risk_per_share": 89.05, "shares": 112, "position_value": 142475, "position_pct": 14.2, "risk_amount": 10000, "reward_1r": 1361.15, "reward_2r": 1450.2, "reward_3r": 1539.25}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -0.1}, "readiness": "RED"}, {"symbol": "TATASTEEL", "close": 206.39, "sma50": 199.52, "sma150": 182.75, "sma200": 176.95, "pct_from_high": 4.6, "pct_above_low": 68.6, "avg_volume": 35406356, "high_52w": 216.45, "low_52w": 122.44, "contractions": [13.6, 8.9, 6.5, 6.1], "num_contractions": 4, "pivot": 216.45, "pct_from_pivot": 4.6, "volume_declining": "False", "vol_dry_up_ratio": 1.06, "pattern_bars": 23, "score": 43, "flags": ["EARNINGS_CLEAR", "WEAK_FUNDAMENTALS", "SECTOR_TAILWIND", "INSTITUTIONAL_BACKED"], "earnings_date": "2026-05-13", "days_to_earnings": 29, "earnings_flag": "CLEAR", "revenue_growth": 0.063, "earnings_growth": 7.308, "roe": 0.03751808579238503, "profit_margins": 0.04073, "market_cap": 2574064812032, "market_cap_category": "Large", "sector": "Basic Materials", "industry": "Steel", "delivery_pct_today": 29.03, "delivery_pct_avg_20d": 41.2, "delivery_pct_trend": "FLAT", "high_delivery_days": 0, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 33.7, "insider_pct": 35.5, "institutional_count": null, "returns_1m": 8.1, "returns_3m": 12.3, "returns_6m": 20.4, "returns_12m": 37.5, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 61, "sector_perf_1m": 7.3, "sector_vs_nifty_1m": 8.9, "sector_momentum": "TAILWIND", "volume_interest": false, "entry": {"near_pivot": "True", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.7, "volume_source": "delivery", "strong_close": true, "close_position": 89, "institutional_pass": true, "conditions_met": "4", "conditions_total": 6}, "trade_plan": {"entry_price": 216.45, "stop_loss": 201.3, "stop_pct": 7.000000000000001, "risk_per_share": 15.15, "shares": 660, "position_value": 142857, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 231.6, "reward_2r": 246.75, "reward_3r": 261.9}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": -0.1}, "readiness": "YELLOW"}, {"symbol": "OIL", "close": 477.15, "sma50": 476.15, "sma150": 431.68, "sma200": 428.59, "pct_from_high": 7.5, "pct_above_low": 50.8, "avg_volume": 7476213, "high_52w": 516.11, "low_52w": 316.35, "contractions": [8.4, 7.2, 5.1], "num_contractions": 3, "pivot": 503.0, "pct_from_pivot": 5.1, "volume_declining": true, "vol_dry_up_ratio": 1.0, "pattern_bars": 11, "score": 39, "flags": ["EARNINGS_UNKNOWN", "WEAK_FUNDAMENTALS", "SECTOR_TAILWIND", "VOLUME_INTEREST", "DELIVERY_RISING"], "earnings_date": null, "days_to_earnings": null, "earnings_flag": "UNKNOWN", "revenue_growth": -0.001, "earnings_growth": -0.107, "roe": 0.13163010079625911, "profit_margins": 0.17412001, "market_cap": 776410234880, "market_cap_category": "Large", "sector": "Energy", "industry": "Oil & Gas Integrated", "delivery_pct_today": 22.7, "delivery_pct_avg_20d": 34.6, "delivery_pct_trend": "RISING", "high_delivery_days": 0, "has_bulk_deal": false, "has_block_deal": false, "bulk_block_details": [], "institutional_pct": 22.8, "insider_pct": 66.6, "institutional_count": null, "returns_1m": 0.7, "returns_3m": 15.8, "returns_6m": 15.6, "returns_12m": 27.0, "nifty_1m": -1.6, "nifty_3m": -8.4, "nifty_6m": -3.4, "nifty_12m": 3.8, "rs_rating": 50, "sector_perf_1m": 3.4, "sector_vs_nifty_1m": 5.0, "sector_momentum": "TAILWIND", "volume_interest": true, "volume_spike_ratio": 2.4, "entry": {"near_pivot": "False", "at_pivot": "False", "rs_pass": false, "earnings_pass": true, "volume_confirm": false, "last_vol_ratio": 0.7, "volume_source": "delivery", "strong_close": false, "close_position": 67, "institutional_pass": true, "conditions_met": "2", "conditions_total": 6}, "trade_plan": {"entry_price": 503.0, "stop_loss": 467.79, "stop_pct": 7.000000000000001, "risk_per_share": 35.21, "shares": 284, "position_value": 142852, "position_pct": 14.3, "risk_amount": 10000, "reward_1r": 538.21, "reward_2r": 573.42, "reward_3r": 608.63}, "exits": {"below_10sma_days": 0, "sell_10sma": false, "below_50sma": false, "climax_warning": false, "last_daily_return": 1.2}, "readiness": "RED"}];
+let filt = "all", sk = "score", sa = false, si = -1;
 
-let activeFilter = "all";
-let sortKey = "score";
-let sortAsc = false;
-let selectedIdx = -1;
-
-function pillClass(flag) {
-    if (flag.includes("CLEAR") || flag.includes("STRONG") || flag.includes("TAILWIND") || flag.includes("INTEREST")) return "green";
-    if (flag.includes("WARNING") || flag.includes("HEADWIND") || flag.includes("UNKNOWN")) return "amber";
-    if (flag.includes("WEAK") || flag.includes("EXCLUDE")) return "red";
-    return "blue";
+function pc(f) {
+    if (/CLEAR|STRONG|TAILWIND|INTEREST|HIGH_DELIVERY|INSTITUTIONAL_BACKED|DELIVERY_RISING|BULK_BLOCK/.test(f)) return "pill-positive";
+    if (/WARNING|HEADWIND|UNKNOWN|FLAT/.test(f)) return "pill-warn";
+    if (/WEAK|LOW|EXCLUDE/.test(f)) return "pill-negative";
+    return "pill-info";
 }
+function bc(s) { return s >= 70 ? "badge-high" : s >= 50 ? "badge-mid" : "badge-low"; }
+function fp(v) { if (v==null) return "N/A"; let p=v*100; return (p>0?"+":"")+p.toFixed(0)+"%"; }
+function dc(r) { return r==="GREEN"?"dot-green":r==="YELLOW"?"dot-yellow":"dot-red"; }
+function es(d) { let e=d.days_to_earnings; if (e==null) return '<span class="t-muted">—</span>'; let c=e>=30?"var(--positive)":e>=14?"var(--text)":"var(--warn)"; return `<span style="color:${c}">${e}d</span>`; }
+function ss(s) { if (!s) return "—"; return s.replace("Consumer ","").replace("Information ","").replace(" & ","/").substring(0,14); }
 
-function scoreClass(s) {
-    if (s >= 70) return "high";
-    if (s >= 50) return "mid";
-    return "low";
-}
-
-function fmt(v, suffix) {
-    if (v === null || v === undefined) return "N/A";
-    return (v > 0 ? "+" : "") + (typeof v === "number" ? (Math.abs(v) < 1 ? (v * 100).toFixed(0) : v.toFixed ? v.toFixed(1) : v) : v) + (suffix || "");
-}
-
-function fmtPctRaw(v) {
-    if (v === null || v === undefined) return "N/A";
-    let p = v * 100;
-    return (p > 0 ? "+" : "") + p.toFixed(0) + "%";
-}
-
-function earningsStr(d) {
-    let dte = d.days_to_earnings;
-    if (dte === null || dte === undefined) return '<span style="color:var(--text-dim)">—</span>';
-    let flag = dte >= 14 ? "✓" : "⚠️";
-    let color = dte >= 30 ? "var(--green)" : dte >= 14 ? "var(--text)" : "var(--amber)";
-    return `<span style="color:${color}">${dte}d ${flag}</span>`;
-}
-
-function sectorShort(s) {
-    if (!s) return "—";
-    return s.replace("Consumer ", "").replace("Information ", "").replace(" & ", "/").substring(0, 16);
-}
-
-function readinessIcon(r) {
-    if (r === "GREEN") return '<span style="color:var(--green)">● GREEN</span>';
-    if (r === "YELLOW") return '<span style="color:var(--amber)">● YELLOW</span>';
-    return '<span style="color:var(--red)">● RED</span>';
-}
-
-function applyFilter(data) {
-    if (activeFilter === "all") return data;
+function af(data) {
+    if (filt==="all") return data;
     return data.filter(d => {
-        let flags = d.flags || [];
-        if (activeFilter === "ready_green") return d.readiness === "GREEN";
-        if (activeFilter === "earnings_clear") return flags.includes("EARNINGS_CLEAR");
-        if (activeFilter === "strong_fundamentals") return flags.includes("STRONG_FUNDAMENTALS");
-        if (activeFilter === "sector_tailwind") return flags.includes("SECTOR_TAILWIND");
-        if (activeFilter === "volume_interest") return flags.includes("VOLUME_INTEREST");
-        if (activeFilter === "high_delivery") return flags.includes("HIGH_DELIVERY");
-        if (activeFilter === "inst_backed") return flags.includes("INSTITUTIONAL_BACKED");
-        if (activeFilter === "score_70") return d.score >= 70;
+        let f=d.flags||[];
+        if (filt==="ready_green") return d.readiness==="GREEN";
+        if (filt==="earnings_clear") return f.includes("EARNINGS_CLEAR");
+        if (filt==="strong_fundamentals") return f.includes("STRONG_FUNDAMENTALS");
+        if (filt==="sector_tailwind") return f.includes("SECTOR_TAILWIND");
+        if (filt==="volume_interest") return f.includes("VOLUME_INTEREST");
+        if (filt==="high_delivery") return f.includes("HIGH_DELIVERY");
+        if (filt==="inst_backed") return f.includes("INSTITUTIONAL_BACKED");
+        if (filt==="score_70") return d.score>=70;
         return true;
     });
 }
 
-function renderTable() {
-    let data = applyFilter([...DATA]);
-    data.sort((a, b) => {
-        let va = a[sortKey], vb = b[sortKey];
-        if (va === null || va === undefined) va = sortAsc ? Infinity : -Infinity;
-        if (vb === null || vb === undefined) vb = sortAsc ? Infinity : -Infinity;
-        if (typeof va === "string") return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
-        return sortAsc ? va - vb : vb - va;
+function render() {
+    let data = af([...D]);
+    data.sort((a,b) => {
+        let va=a[sk],vb=b[sk];
+        if (va==null) va=sa?Infinity:-Infinity;
+        if (vb==null) vb=sa?Infinity:-Infinity;
+        if (typeof va==="string") return sa?va.localeCompare(vb):vb.localeCompare(va);
+        return sa?va-vb:vb-va;
     });
 
-    let html = "";
-    data.forEach((d, i) => {
-        let flags = (d.flags || []).map(f => `<span class="pill ${pillClass(f)}">${f.replace("_", " ")}</span>`).join("");
-        html += `<tr data-idx="${DATA.indexOf(d)}" class="${DATA.indexOf(d) === selectedIdx ? 'selected' : ''}" onclick="selectRow(${DATA.indexOf(d)})">
-            <td>${i + 1}</td>
-            <td>${readinessIcon(d.readiness)}</td>
-            <td><span class="score ${scoreClass(d.score)}">${d.score}</span></td>
+    let h="";
+    data.forEach((d,i) => {
+        let flags=(d.flags||[]).map(f=>`<span class="pill ${pc(f)}">${f.replace(/_/g," ")}</span>`).join(" ");
+        let idx=D.indexOf(d);
+        let del=d.delivery_pct_today!=null?d.delivery_pct_today+"%":"—";
+        let delColor=(d.delivery_pct_today||0)>=60?"var(--positive)":(d.delivery_pct_today||0)<30?"var(--negative)":"var(--text)";
+        h+=`<tr class="${idx===si?'sel':''}" onclick="sel(${idx})">
+            <td style="color:var(--text-muted)">${i+1}</td>
+            <td><span class="dot ${dc(d.readiness)}"></span>${d.readiness}</td>
+            <td><span class="badge ${bc(d.score)}">${d.score}</span></td>
             <td style="font-weight:600;color:var(--text)">${d.symbol}</td>
             <td>₹${d.close.toLocaleString()}</td>
             <td>₹${d.pivot.toLocaleString()}</td>
-            <td style="color:${d.pct_from_pivot <= 2 ? 'var(--green)' : 'var(--text)'}">${d.pct_from_pivot}%</td>
+            <td style="color:${d.pct_from_pivot<=2?'var(--positive)':'var(--text)'}">${d.pct_from_pivot}%</td>
             <td>${d.contractions.length}T</td>
-            <td>${earningsStr(d)}</td>
-            <td style="color:${d.rs_rating >= 80 ? 'var(--green)' : d.rs_rating >= 50 ? 'var(--amber)' : 'var(--text-dim)'}">${d.rs_rating || "—"}</td>
-            <td style="font-size:11px;font-family:'DM Sans'">${sectorShort(d.sector)}</td>
+            <td>${es(d)}</td>
+            <td style="color:${d.rs_rating>=80?'var(--positive)':d.rs_rating>=50?'var(--warn)':'var(--text-muted)'}">${d.rs_rating||"—"}</td>
+            <td style="color:${delColor}">${del}</td>
+            <td style="font-size:11px;font-family:'Inter',sans-serif">${ss(d.sector)}</td>
             <td>${flags}</td>
         </tr>`;
     });
-    document.getElementById("tableBody").innerHTML = html;
+    document.getElementById("tb").innerHTML=h;
 }
 
-function selectRow(idx) {
-    selectedIdx = idx;
-    renderTable();
-    showDetail(DATA[idx]);
-}
+function sel(idx) { si=idx; render(); detail(D[idx]); }
 
-function showDetail(d) {
-    let panel = document.getElementById("detailPanel");
-    panel.classList.add("show");
+function detail(d) {
+    let p=document.getElementById("dp");
+    p.classList.add("show");
 
-    let contrBars = d.contractions.map((c, i) => {
-        let h = Math.max(c / d.contractions[0] * 100, 15);
-        return `<div class="contraction-bar" style="height:${h}%"><span>${c}%</span></div>`;
+    let cb=d.contractions.map((c,i)=>{
+        let h=Math.max(c/d.contractions[0]*100,15);
+        return `<div class="cbar" style="height:${h}%"><span>${c}%</span></div>`;
     }).join("");
 
-    let flagBadges = (d.flags || []).map(f => `<span class="pill ${pillClass(f)}">${f.replace("_", " ")}</span>`).join("");
+    let fb=(d.flags||[]).map(f=>`<span class="pill ${pc(f)}">${f.replace(/_/g," ")}</span>`).join(" ");
 
-    panel.innerHTML = `
+    let tp=d.trade_plan||{}, en=d.entry||{}, ex=d.exits||{};
+    let rc=d.readiness==="GREEN"?"var(--positive)":d.readiness==="YELLOW"?"var(--warn)":"var(--negative)";
+
+    let checks=[
+        ["Near Pivot",en.near_pivot||en.at_pivot],
+        ["RS > 70",en.rs_pass],
+        ["Earnings Clear",en.earnings_pass],
+        ["Volume "+(en.last_vol_ratio||0)+"x",en.volume_confirm],
+        ["Close "+(en.close_position||0)+"%",en.strong_close],
+        ["Inst Backed",en.institutional_pass],
+    ];
+    let checkH=checks.map(([n,ok])=>`<div style="color:${ok?'var(--positive)':'var(--negative)'};font-size:12px;padding:3px 0">${ok?'✓':'✗'} ${n}</div>`).join("");
+
+    let exitW=[];
+    if (ex.sell_10sma) exitW.push("Below 10 SMA "+ex.below_10sma_days+"d");
+    if (ex.below_50sma) exitW.push("Below 50 SMA");
+    if (ex.climax_warning) exitW.push("CLIMAX TOP");
+    let exitH=exitW.length>0?exitW.map(w=>`<div style="color:var(--negative);font-size:12px">⚠ ${w}</div>`).join(""):`<div style="color:var(--positive);font-size:12px">No exit signals</div>`;
+
+    p.innerHTML=`
         <h2>${d.symbol}</h2>
-        <div class="sub">${d.sector || "—"} · ${d.industry || "—"} · ${d.market_cap_category || "—"} Cap</div>
+        <div class="sub">${d.sector||"—"} · ${d.industry||"—"} · ${d.market_cap_category||"—"} Cap</div>
+        <div class="badges-wrap">${fb}</div>
 
-        <div class="badges">${flagBadges}</div>
-
-        <div class="detail-section" style="margin-top:20px">
+        <div class="detail-sec">
             <h3>VCP Pattern</h3>
-            <div class="contraction-viz">${contrBars}</div>
-            <div class="detail-row"><span class="label">Contractions</span><span class="val">${d.contractions.map(c => c + "%").join(" → ")} (${d.num_contractions}T)</span></div>
-            <div class="detail-row"><span class="label">Volume Declining</span><span class="val" style="color:${d.volume_declining ? 'var(--green)' : 'var(--red)'}">${d.volume_declining ? "Yes ✓" : "No ✗"}</span></div>
-            <div class="detail-row"><span class="label">Vol Dry-up Ratio</span><span class="val">${d.vol_dry_up_ratio}</span></div>
-            <div class="detail-row"><span class="label">Pattern Bars</span><span class="val">${d.pattern_bars}</span></div>
+            <div class="cbar-wrap">${cb}</div>
+            <div class="kv"><span class="k">Contractions</span><span class="v">${d.contractions.map(c=>c+"%").join(" → ")} (${d.num_contractions}T)</span></div>
+            <div class="kv"><span class="k">Volume Declining</span><span class="v" style="color:${d.volume_declining?'var(--positive)':'var(--negative)'}">${d.volume_declining?"Yes":"No"}</span></div>
+            <div class="kv"><span class="k">Pattern Bars</span><span class="v">${d.pattern_bars}</span></div>
         </div>
 
-        <div class="detail-section">
-            <h3>Price & Pivot</h3>
-            <div class="detail-row"><span class="label">Close</span><span class="val">₹${d.close.toLocaleString()}</span></div>
-            <div class="detail-row"><span class="label">Pivot</span><span class="val">₹${d.pivot.toLocaleString()}</span></div>
-            <div class="detail-row"><span class="label">Distance to Pivot</span><span class="val" style="color:var(--green)">${d.pct_from_pivot}%</span></div>
-            <div class="detail-row"><span class="label">52W High</span><span class="val">₹${d.high_52w.toLocaleString()} (${d.pct_from_high}% away)</span></div>
-            <div class="detail-row"><span class="label">SMA 50 / 150 / 200</span><span class="val">${d.sma50} / ${d.sma150} / ${d.sma200}</span></div>
+        <div class="detail-sec">
+            <h3>Price</h3>
+            <div class="kv"><span class="k">Close</span><span class="v">₹${d.close.toLocaleString()}</span></div>
+            <div class="kv"><span class="k">Pivot</span><span class="v">₹${d.pivot.toLocaleString()}</span></div>
+            <div class="kv"><span class="k">Distance</span><span class="v" style="color:var(--positive)">${d.pct_from_pivot}%</span></div>
+            <div class="kv"><span class="k">52W High</span><span class="v">₹${d.high_52w.toLocaleString()} (${d.pct_from_high}%)</span></div>
         </div>
 
-        <div class="detail-section">
-            <h3>Earnings</h3>
-            <div class="detail-row"><span class="label">Next Earnings</span><span class="val">${d.earnings_date || "Unknown"}</span></div>
-            <div class="detail-row"><span class="label">Days Until</span><span class="val">${d.days_to_earnings !== null ? d.days_to_earnings + " days" : "N/A"}</span></div>
-        </div>
-
-        <div class="detail-section">
+        <div class="detail-sec">
             <h3>Fundamentals</h3>
-            <div class="detail-row"><span class="label">Revenue Growth (YoY)</span><span class="val">${fmtPctRaw(d.revenue_growth)}</span></div>
-            <div class="detail-row"><span class="label">Earnings Growth (YoY)</span><span class="val">${fmtPctRaw(d.earnings_growth)}</span></div>
-            <div class="detail-row"><span class="label">ROE</span><span class="val">${fmtPctRaw(d.roe)}</span></div>
-            <div class="detail-row"><span class="label">Profit Margins</span><span class="val">${fmtPctRaw(d.profit_margins)}</span></div>
-            <div class="detail-row"><span class="label">Market Cap</span><span class="val">${d.market_cap ? "₹" + (d.market_cap / 10000000).toFixed(0) + " Cr" : "N/A"}</span></div>
+            <div class="kv"><span class="k">Revenue Growth</span><span class="v">${fp(d.revenue_growth)}</span></div>
+            <div class="kv"><span class="k">Earnings Growth</span><span class="v">${fp(d.earnings_growth)}</span></div>
+            <div class="kv"><span class="k">ROE</span><span class="v">${fp(d.roe)}</span></div>
+            <div class="kv"><span class="k">Market Cap</span><span class="v">${d.market_cap?"₹"+(d.market_cap/10000000).toFixed(0)+" Cr":"N/A"}</span></div>
         </div>
 
-        <div class="detail-section">
-            <h3>Relative Strength</h3>
-            <div class="detail-row"><span class="label">RS Rating</span><span class="val" style="color:${d.rs_rating >= 80 ? 'var(--green)' : 'var(--amber)'}">${d.rs_rating}th percentile</span></div>
-            <div class="detail-row"><span class="label">1M Return</span><span class="val">${d.returns_1m !== null ? d.returns_1m + "%" : "N/A"} <span style="color:var(--text-dim);font-size:11px">vs ${d.nifty_1m || "—"}% Nifty</span></span></div>
-            <div class="detail-row"><span class="label">3M Return</span><span class="val">${d.returns_3m !== null ? d.returns_3m + "%" : "N/A"} <span style="color:var(--text-dim);font-size:11px">vs ${d.nifty_3m || "—"}% Nifty</span></span></div>
-            <div class="detail-row"><span class="label">6M Return</span><span class="val">${d.returns_6m !== null ? d.returns_6m + "%" : "N/A"} <span style="color:var(--text-dim);font-size:11px">vs ${d.nifty_6m || "—"}% Nifty</span></span></div>
-            <div class="detail-row"><span class="label">12M Return</span><span class="val">${d.returns_12m !== null ? d.returns_12m + "%" : "N/A"} <span style="color:var(--text-dim);font-size:11px">vs ${d.nifty_12m || "—"}% Nifty</span></span></div>
+        <div class="detail-sec">
+            <h3>Strength</h3>
+            <div class="kv"><span class="k">RS Rating</span><span class="v" style="color:${d.rs_rating>=80?'var(--positive)':'var(--warn)'}">${d.rs_rating}th</span></div>
+            <div class="kv"><span class="k">3M Return</span><span class="v">${d.returns_3m!=null?d.returns_3m+"%":"N/A"} <span class="t-muted" style="font-size:10px">vs ${d.nifty_3m||"—"}%</span></span></div>
+            <div class="kv"><span class="k">6M Return</span><span class="v">${d.returns_6m!=null?d.returns_6m+"%":"N/A"} <span class="t-muted" style="font-size:10px">vs ${d.nifty_6m||"—"}%</span></span></div>
+            <div class="kv"><span class="k">Sector vs Nifty</span><span class="v" style="color:${(d.sector_vs_nifty_1m||0)>0?'var(--positive)':'var(--negative)'}">${d.sector_vs_nifty_1m!=null?(d.sector_vs_nifty_1m>0?"+":"")+d.sector_vs_nifty_1m+"%":"N/A"}</span></div>
         </div>
 
-        <div class="detail-section">
-            <h3>Sector</h3>
-            <div class="detail-row"><span class="label">Sector</span><span class="val">${d.sector || "N/A"}</span></div>
-            <div class="detail-row"><span class="label">Industry</span><span class="val">${d.industry || "N/A"}</span></div>
-            <div class="detail-row"><span class="label">Sector 1M vs Nifty</span><span class="val" style="color:${(d.sector_vs_nifty_1m || 0) > 0 ? 'var(--green)' : 'var(--red)'}">${d.sector_vs_nifty_1m !== null ? (d.sector_vs_nifty_1m > 0 ? "+" : "") + d.sector_vs_nifty_1m + "%" : "N/A"}</span></div>
-        </div>
-
-        <div class="detail-section">
+        <div class="detail-sec">
             <h3>NSE Data</h3>
-            <div class="detail-row"><span class="label">Delivery % (Today)</span><span class="val" style="color:${(d.delivery_pct_today || 0) >= 60 ? 'var(--green)' : (d.delivery_pct_today || 0) < 30 ? 'var(--red)' : 'var(--amber)'}">${d.delivery_pct_today != null ? d.delivery_pct_today + "%" : "N/A"}</span></div>
-            <div class="detail-row"><span class="label">Delivery % (20d Avg)</span><span class="val">${d.delivery_pct_avg_20d != null ? d.delivery_pct_avg_20d + "%" : "N/A"}</span></div>
-            <div class="detail-row"><span class="label">Delivery Trend</span><span class="val" style="color:${d.delivery_pct_trend === 'RISING' ? 'var(--green)' : d.delivery_pct_trend === 'FALLING' ? 'var(--red)' : 'var(--amber)'}">${d.delivery_pct_trend || "N/A"}</span></div>
-            <div class="detail-row"><span class="label">High Delivery Days</span><span class="val">${d.high_delivery_days || 0} / 20</span></div>
-            <div class="detail-row"><span class="label">Institutional %</span><span class="val" style="color:${(d.institutional_pct || 0) >= 30 ? 'var(--green)' : (d.institutional_pct || 0) < 15 ? 'var(--red)' : 'var(--amber)'}">${d.institutional_pct != null ? d.institutional_pct + "%" : "N/A"}</span></div>
-            <div class="detail-row"><span class="label">Promoter %</span><span class="val">${d.insider_pct != null ? d.insider_pct + "%" : "N/A"}</span></div>
-            ${d.has_bulk_deal || d.has_block_deal ? '<div class="detail-row"><span class="label">Deals</span><span class="val" style="color:var(--green)">BULK/BLOCK DEAL DETECTED</span></div>' : ''}
+            <div class="kv"><span class="k">Delivery %</span><span class="v" style="color:${(d.delivery_pct_today||0)>=60?'var(--positive)':(d.delivery_pct_today||0)<30?'var(--negative)':'var(--text)'}">${d.delivery_pct_today!=null?d.delivery_pct_today+"%":"N/A"}</span></div>
+            <div class="kv"><span class="k">Del 20d Avg</span><span class="v">${d.delivery_pct_avg_20d!=null?d.delivery_pct_avg_20d+"%":"N/A"}</span></div>
+            <div class="kv"><span class="k">Del Trend</span><span class="v" style="color:${d.delivery_pct_trend==='RISING'?'var(--positive)':d.delivery_pct_trend==='FALLING'?'var(--negative)':'var(--text)'}">${d.delivery_pct_trend||"N/A"}</span></div>
+            <div class="kv"><span class="k">Institutional</span><span class="v" style="color:${(d.institutional_pct||0)>=30?'var(--positive)':(d.institutional_pct||0)<15?'var(--negative)':'var(--text)'}">${d.institutional_pct!=null?d.institutional_pct+"%":"N/A"}</span></div>
+            <div class="kv"><span class="k">Promoter</span><span class="v">${d.insider_pct!=null?d.insider_pct+"%":"N/A"}</span></div>
+            ${d.has_bulk_deal||d.has_block_deal?'<div class="kv"><span class="k">Deals</span><span class="v" style="color:var(--positive)">BULK/BLOCK DETECTED</span></div>':''}
         </div>
 
-        ${(() => {
-            let tp = d.trade_plan || {};
-            let entry = d.entry || {};
-            let exits = d.exits || {};
-            let rColor = d.readiness === "GREEN" ? "var(--green)" : d.readiness === "YELLOW" ? "var(--amber)" : "var(--red)";
-
-            let checks = [
-                ["Near Pivot", entry.near_pivot || entry.at_pivot],
-                ["RS > 70", entry.rs_pass],
-                ["Earnings Clear", entry.earnings_pass],
-                ["Volume " + (entry.last_vol_ratio || 0) + "x", entry.volume_confirm],
-                ["Close " + (entry.close_position || 0) + "%", entry.strong_close],
-                ["Inst Backed", entry.institutional_pass],
-            ];
-            let checkHtml = checks.map(([name, ok]) =>
-                '<span style="color:' + (ok ? 'var(--green)' : 'var(--red)') + '">' + (ok ? '✓' : '✗') + ' ' + name + '</span>'
-            ).join('<br>');
-
-            let exitWarnings = [];
-            if (exits.sell_10sma) exitWarnings.push("Below 10 SMA for " + exits.below_10sma_days + " days");
-            if (exits.below_50sma) exitWarnings.push("Below 50 SMA");
-            if (exits.climax_warning) exitWarnings.push("CLIMAX TOP WARNING");
-            let exitHtml = exitWarnings.length > 0
-                ? exitWarnings.map(w => '<div style="color:var(--red);font-size:12px">⚠ ' + w + '</div>').join('')
-                : '<div style="color:var(--green);font-size:12px">No exit signals</div>';
-
-            return `
-        <div class="detail-section" style="border:1px solid ${rColor};border-radius:10px;padding:16px;margin-top:4px">
-            <h3 style="color:${rColor}">Trade Plan — ${d.readiness} (${entry.conditions_met || 0}/${entry.conditions_total || 5})</h3>
-            <div class="detail-row"><span class="label">Entry (Pivot)</span><span class="val" style="color:var(--green)">₹${(tp.entry_price || 0).toLocaleString()}</span></div>
-            <div class="detail-row"><span class="label">Stop Loss</span><span class="val" style="color:var(--red)">₹${(tp.stop_loss || 0).toLocaleString()} (-${tp.stop_pct || 7}%)</span></div>
-            <div class="detail-row"><span class="label">Position</span><span class="val">${tp.shares || 0} shares / ₹${(tp.position_value || 0).toLocaleString()} (${tp.position_pct || 0}%)</span></div>
-            <div class="detail-row"><span class="label">Risk</span><span class="val">₹${(tp.risk_amount || 0).toLocaleString()} (₹${tp.risk_per_share || 0}/share)</span></div>
-            <div class="detail-row"><span class="label">Target 1R</span><span class="val">₹${(tp.reward_1r || 0).toLocaleString()}</span></div>
-            <div class="detail-row"><span class="label">Target 2R</span><span class="val">₹${(tp.reward_2r || 0).toLocaleString()}</span></div>
-            <div class="detail-row"><span class="label">Target 3R</span><span class="val" style="color:var(--green)">₹${(tp.reward_3r || 0).toLocaleString()}</span></div>
+        <div class="trade-box" style="border-color:${rc}">
+            <h3 style="color:${rc};margin-bottom:12px">Trade Plan — ${d.readiness} (${en.conditions_met||0}/${en.conditions_total||6})</h3>
+            <div class="kv"><span class="k">Entry</span><span class="v" style="color:var(--positive)">₹${(tp.entry_price||0).toLocaleString()}</span></div>
+            <div class="kv"><span class="k">Stop</span><span class="v" style="color:var(--negative)">₹${(tp.stop_loss||0).toLocaleString()} (-${tp.stop_pct||7}%)</span></div>
+            <div class="kv"><span class="k">Position</span><span class="v">${tp.shares||0} sh · ₹${(tp.position_value||0).toLocaleString()}</span></div>
+            <div class="kv"><span class="k">Risk</span><span class="v">₹${(tp.risk_amount||0).toLocaleString()}</span></div>
+            <div class="kv"><span class="k">1R / 2R / 3R</span><span class="v">₹${(tp.reward_1r||0).toLocaleString()} / ₹${(tp.reward_2r||0).toLocaleString()} / ₹${(tp.reward_3r||0).toLocaleString()}</span></div>
             <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border)">
-                <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:8px;font-weight:600">Entry Checklist</div>
-                ${checkHtml}
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px;font-weight:600">Entry Checklist</div>
+                ${checkH}
             </div>
-            <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border)">
-                <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:8px;font-weight:600">Exit Signals</div>
-                ${exitHtml}
+            <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px;font-weight:600">Exit Signals</div>
+                ${exitH}
             </div>
-        </div>`;
-        })()}
+        </div>
 
-        <div style="margin-top:24px;text-align:center">
-            <a href="https://www.tradingview.com/chart/?symbol=NSE%3A${d.symbol}" target="_blank"
-               style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 24px;color:var(--text);text-decoration:none;font-size:13px;font-weight:600;display:inline-block">
-                Open on TradingView →
-            </a>
+        <div class="text-center">
+            <a href="https://www.tradingview.com/chart/?symbol=NSE%3A${d.symbol}" target="_blank" class="chart-link">Open on TradingView →</a>
         </div>
     `;
 }
 
-// Filter buttons
-document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        activeFilter = btn.dataset.filter;
-        renderTable();
+document.querySelectorAll(".fbtn").forEach(b=>{
+    b.addEventListener("click",()=>{
+        document.querySelectorAll(".fbtn").forEach(x=>x.classList.remove("on"));
+        b.classList.add("on");
+        filt=b.dataset.f;
+        render();
     });
 });
 
-// Sort headers
-document.querySelectorAll("th[data-sort]").forEach(th => {
-    th.addEventListener("click", () => {
-        let key = th.dataset.sort;
-        if (sortKey === key) sortAsc = !sortAsc;
-        else { sortKey = key; sortAsc = false; }
-        renderTable();
+document.querySelectorAll("th[data-s]").forEach(th=>{
+    th.addEventListener("click",()=>{
+        let k=th.dataset.s;
+        if (sk===k) sa=!sa; else { sk=k; sa=false; }
+        render();
     });
 });
 
-// Initial render
-renderTable();
-if (DATA.length > 0) selectRow(0);
+render();
+if (D.length>0) sel(0);
 </script>
 </body>
 </html>
