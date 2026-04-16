@@ -97,7 +97,9 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
+    gap: 12px;
 }
+.nav-left { display: flex; align-items: center; gap: 16px; }
 .nav-logo { font-weight: 700; font-size: 15px; color: var(--text); text-decoration: none; }
 .nav-logo span { color: var(--accent); }
 .nav-links { display: flex; gap: 4px; }
@@ -112,6 +114,43 @@ body {
 }
 .nav-links a:hover { color: var(--text); background: var(--surface2); }
 .nav-links a.active { color: var(--accent); background: var(--accent-dim); }
+
+.updated {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+}
+.updated .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--positive);
+    box-shadow: 0 0 0 0 var(--positive);
+    animation: pulse 2s infinite;
+}
+.updated .label { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; }
+.updated .time { color: var(--text); font-weight: 500; }
+.updated.stale .pulse { background: var(--warn); animation: none; }
+.updated.stale .time { color: var(--warn); }
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(76, 175, 124, 0.5); }
+    70% { box-shadow: 0 0 0 8px rgba(76, 175, 124, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(76, 175, 124, 0); }
+}
+
+@media (max-width: 640px) {
+    .nav { padding: 10px 14px; gap: 8px; flex-wrap: wrap; }
+    .nav-left { gap: 10px; }
+    .updated { padding: 5px 10px; font-size: 10px; }
+    .updated .label { display: none; }
+}
 
 
 body { padding: 0; }
@@ -277,10 +316,17 @@ body { padding: 0; }
 <body>
 
 <nav class="nav">
-    <a href="index.html" class="nav-logo">VCP <span>Scanner</span></a>
-    <div class="nav-links">
-        <a href="action.html" class="active">Action Board</a>
-        <a href="dashboard.html">Dashboard</a>
+    <div class="nav-left">
+        <a href="index.html" class="nav-logo">VCP <span>Scanner</span></a>
+        <div class="nav-links">
+            <a href="action.html" class="active">Action Board</a>
+            <a href="dashboard.html">Dashboard</a>
+        </div>
+    </div>
+    <div class="updated" id="updatedBadge" data-updated="16 Apr 2026 · 04:42 PM IST">
+        <span class="pulse"></span>
+        <span class="label">Updated</span>
+        <span class="time">16 Apr 2026 · 04:42 PM IST</span>
     </div>
 </nav>
 
@@ -288,7 +334,7 @@ body { padding: 0; }
 
 <div class="ab-header">
     <div class="ab-title">VCP <span>Action Board</span></div>
-    <div class="ab-meta">14 Apr 2026, 01:42 AM · 18 scanned · 6s</div>
+    <div class="ab-meta">17 scanned &middot; scan took 19s</div>
 </div>
 
 <div class="ab-stats">
@@ -305,105 +351,57 @@ body { padding: 0; }
         <div class="tc" style="border-color:var(--positive)">
             <div class="tc-head">
                 <div>
-                    <div class="tc-sym" style="color:var(--positive)">INDIANB</div>
-                    <div class="tc-meta">Financial Services · Large Cap</div>
+                    <div class="tc-sym" style="color:var(--positive)">BHARATFORG</div>
+                    <div class="tc-meta">Consumer Cyclical · Large Cap</div>
                 </div>
                 <div class="text-right">
                     <div class="tc-status" style="color:var(--positive)">GREEN</div>
-                    <div class="tc-meta">Score 52 · RS 83</div>
+                    <div class="tc-meta">Score 50 · RS 95</div>
                 </div>
             </div>
 
             <div class="tc-grid3">
                 <div class="tc-box">
                     <div class="tc-label">ENTRY</div>
-                    <div class="tc-val" style="color:var(--positive)">₹1,000</div>
-                    <div class="tc-sub">3.4% away</div>
+                    <div class="tc-val" style="color:var(--positive)">₹1,936</div>
+                    <div class="tc-sub">4.1% away</div>
                 </div>
                 <div class="tc-box">
                     <div class="tc-label">STOP</div>
-                    <div class="tc-val" style="color:var(--negative)">₹930</div>
+                    <div class="tc-val" style="color:var(--negative)">₹1,800</div>
                     <div class="tc-sub">-7%</div>
                 </div>
                 <div class="tc-box">
                     <div class="tc-label">POSITION</div>
-                    <div class="tc-val">142 sh</div>
-                    <div class="tc-sub">₹142,000</div>
+                    <div class="tc-val">73 sh</div>
+                    <div class="tc-sub">₹141,292</div>
                 </div>
             </div>
 
             <div class="tc-grid3 targets">
-                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹1,070</div></div>
-                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹1,140</div></div>
-                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹1,210</div></div>
+                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹2,071</div></div>
+                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹2,206</div></div>
+                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹2,342</div></div>
             </div>
 
             <div class="tc-info">
-                <div>VCP: <span style="color:var(--text)">12.1% → 9.4% → 7.1% (3T)</span> · Earn: <span style="color:var(--text)">16d</span> · Rev: <span style="color:var(--text)">14%</span> · EPS: <span style="color:var(--text)">8%</span> · ROE: <span style="color:var(--text)">16%</span></div>
-                <div>Del: <span style="color:var(--negative)">29.79%</span> (avg 39.4%) · Inst: <span style="color:var(--warn)">17.0%</span></div>
+                <div>VCP: <span style="color:var(--text)">14.8% → 9.8% → 8.1% (3T)</span> · Earn: <span style="color:var(--text)">21d</span> · Rev: <span style="color:var(--text)">25%</span> · EPS: <span style="color:var(--text)">22%</span> · ROE: <span style="color:var(--text)">10%</span></div>
+                <div>Del: <span style="color:var(--positive)">60.84%</span> (avg 45.6%) · Inst: <span style="color:var(--positive)">38.6%</span></div>
             </div>
 
-            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check ok">RS 83</span><span class="check ok">Earnings</span><span class="check no">Del 29.79%</span><span class="check ok">Close 89%</span><span class="check ok">Inst 17%</span></div>
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check ok">RS 95</span><span class="check ok">Earnings</span><span class="check ok">Del 60.84%</span><span class="check ok">Close 86%</span><span class="check ok">Inst 39%</span></div>
             <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
             <div class="text-right" style="margin-top:10px">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AINDIANB" target="_blank" class="tv-link">TradingView →</a>
+                <a href="https://www.tradingview.com/chart/?symbol=NSE%3ABHARATFORG" target="_blank" class="tv-link">TradingView →</a>
             </div>
         </div>
         </div>
 
         <div class="section">
-            <h2 class="section-title" style="color:var(--warn)">WATCH — 9 forming</h2>
+            <h2 class="section-title" style="color:var(--warn)">WATCH — 7 forming</h2>
             <p class="section-sub">4-5 conditions met. Set price alerts — these could turn GREEN in 1-3 days.</p>
             
-        <div class="tc" style="border-color:var(--warn)">
-            <div class="tc-head">
-                <div>
-                    <div class="tc-sym" style="color:var(--warn)">MCX</div>
-                    <div class="tc-meta">Financial Services · Large Cap</div>
-                </div>
-                <div class="text-right">
-                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
-                    <div class="tc-meta">Score 68 · RS 100</div>
-                </div>
-            </div>
-
-            <div class="tc-grid3">
-                <div class="tc-box">
-                    <div class="tc-label">ENTRY</div>
-                    <div class="tc-val" style="color:var(--positive)">₹2,703</div>
-                    <div class="tc-sub">-2.3% away</div>
-                </div>
-                <div class="tc-box">
-                    <div class="tc-label">STOP</div>
-                    <div class="tc-val" style="color:var(--negative)">₹2,514</div>
-                    <div class="tc-sub">-7%</div>
-                </div>
-                <div class="tc-box">
-                    <div class="tc-label">POSITION</div>
-                    <div class="tc-val">52 sh</div>
-                    <div class="tc-sub">₹140,540</div>
-                </div>
-            </div>
-
-            <div class="tc-grid3 targets">
-                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹2,892</div></div>
-                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹3,081</div></div>
-                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹3,270</div></div>
-            </div>
-
-            <div class="tc-info">
-                <div>VCP: <span style="color:var(--text)">16.4% → 6.1% (2T)</span> · Earn: <span style="color:var(--text)">23d</span> · Rev: <span style="color:var(--text)">115%</span> · EPS: <span style="color:var(--text)">151%</span> · ROE: <span style="color:var(--text)">30%</span></div>
-                <div>Del: <span style="color:var(--negative)">37.37%</span> (avg 40.4%) · Inst: <span style="color:var(--positive)">51.5%</span></div>
-            </div>
-
-            <div class="tc-checks"><span class="check no">Near Pivot</span><span class="check ok">RS 100</span><span class="check ok">Earnings</span><span class="check no">Del 37.37%</span><span class="check ok">Close 93%</span><span class="check ok">Inst 52%</span></div>
-            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
-
-            <div class="text-right" style="margin-top:10px">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AMCX" target="_blank" class="tv-link">TradingView →</a>
-            </div>
-        </div>
         <div class="tc" style="border-color:var(--warn)">
             <div class="tc-head">
                 <div>
@@ -412,7 +410,7 @@ body { padding: 0; }
                 </div>
                 <div class="text-right">
                     <div class="tc-status" style="color:var(--warn)">YELLOW</div>
-                    <div class="tc-meta">Score 62 · RS 72</div>
+                    <div class="tc-meta">Score 55 · RS 63</div>
                 </div>
             </div>
 
@@ -420,7 +418,7 @@ body { padding: 0; }
                 <div class="tc-box">
                     <div class="tc-label">ENTRY</div>
                     <div class="tc-val" style="color:var(--positive)">₹293</div>
-                    <div class="tc-sub">1.9% away</div>
+                    <div class="tc-sub">3.5% away</div>
                 </div>
                 <div class="tc-box">
                     <div class="tc-label">STOP</div>
@@ -442,110 +440,14 @@ body { padding: 0; }
 
             <div class="tc-info">
                 <div>VCP: <span style="color:var(--text)">10.6% → 6.2% (2T)</span> · Earn: <span style="color:var(--text)">?</span> · Rev: <span style="color:var(--text)">1%</span> · EPS: <span style="color:var(--text)">16%</span> · ROE: <span style="color:var(--text)">11%</span></div>
-                <div>Del: <span style="color:var(--negative)">23.66%</span> (avg 45.0%) · Inst: <span style="color:var(--warn)">22.9%</span></div>
+                <div>Del: <span style="color:var(--warn)">54.46%</span> (avg 45.1%) · Inst: <span style="color:var(--warn)">22.9%</span></div>
             </div>
 
-            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check ok">RS 72</span><span class="check ok">Earnings</span><span class="check no">Del 23.66%</span><span class="check no">Close 70%</span><span class="check ok">Inst 23%</span></div>
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check no">RS 63</span><span class="check ok">Earnings</span><span class="check ok">Del 54.46%</span><span class="check no">Close 12%</span><span class="check ok">Inst 23%</span></div>
             <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
             <div class="text-right" style="margin-top:10px">
                 <a href="https://www.tradingview.com/chart/?symbol=NSE%3AONGC" target="_blank" class="tv-link">TradingView →</a>
-            </div>
-        </div>
-        <div class="tc" style="border-color:var(--warn)">
-            <div class="tc-head">
-                <div>
-                    <div class="tc-sym" style="color:var(--warn)">BHARATFORG</div>
-                    <div class="tc-meta">Consumer Cyclical · Large Cap</div>
-                </div>
-                <div class="text-right">
-                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
-                    <div class="tc-meta">Score 56 · RS 89</div>
-                </div>
-            </div>
-
-            <div class="tc-grid3">
-                <div class="tc-box">
-                    <div class="tc-label">ENTRY</div>
-                    <div class="tc-val" style="color:var(--positive)">₹1,812</div>
-                    <div class="tc-sub">0.6% away</div>
-                </div>
-                <div class="tc-box">
-                    <div class="tc-label">STOP</div>
-                    <div class="tc-val" style="color:var(--negative)">₹1,685</div>
-                    <div class="tc-sub">-7%</div>
-                </div>
-                <div class="tc-box">
-                    <div class="tc-label">POSITION</div>
-                    <div class="tc-val">78 sh</div>
-                    <div class="tc-sub">₹141,336</div>
-                </div>
-            </div>
-
-            <div class="tc-grid3 targets">
-                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹1,939</div></div>
-                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹2,066</div></div>
-                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹2,193</div></div>
-            </div>
-
-            <div class="tc-info">
-                <div>VCP: <span style="color:var(--text)">9.8% → 8.1% (2T)</span> · Earn: <span style="color:var(--text)">23d</span> · Rev: <span style="color:var(--text)">25%</span> · EPS: <span style="color:var(--text)">22%</span> · ROE: <span style="color:var(--text)">10%</span></div>
-                <div>Del: <span style="color:var(--negative)">38.47%</span> (avg 44.4%) · Inst: <span style="color:var(--positive)">38.6%</span></div>
-            </div>
-
-            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check ok">RS 89</span><span class="check ok">Earnings</span><span class="check no">Del 38.47%</span><span class="check no">Close 75%</span><span class="check ok">Inst 39%</span></div>
-            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
-
-            <div class="text-right" style="margin-top:10px">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3ABHARATFORG" target="_blank" class="tv-link">TradingView →</a>
-            </div>
-        </div>
-        <div class="tc" style="border-color:var(--warn)">
-            <div class="tc-head">
-                <div>
-                    <div class="tc-sym" style="color:var(--warn)">ASTRAL</div>
-                    <div class="tc-meta">Industrials · Large Cap</div>
-                </div>
-                <div class="text-right">
-                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
-                    <div class="tc-meta">Score 54 · RS 33</div>
-                </div>
-            </div>
-
-            <div class="tc-grid3">
-                <div class="tc-box">
-                    <div class="tc-label">ENTRY</div>
-                    <div class="tc-val" style="color:var(--positive)">₹1,678</div>
-                    <div class="tc-sub">3.2% away</div>
-                </div>
-                <div class="tc-box">
-                    <div class="tc-label">STOP</div>
-                    <div class="tc-val" style="color:var(--negative)">₹1,561</div>
-                    <div class="tc-sub">-7%</div>
-                </div>
-                <div class="tc-box">
-                    <div class="tc-label">POSITION</div>
-                    <div class="tc-val">85 sh</div>
-                    <div class="tc-sub">₹142,630</div>
-                </div>
-            </div>
-
-            <div class="tc-grid3 targets">
-                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹1,795</div></div>
-                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹1,913</div></div>
-                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹2,030</div></div>
-            </div>
-
-            <div class="tc-info">
-                <div>VCP: <span style="color:var(--text)">13.2% → 6.0% (2T)</span> · Earn: <span style="color:var(--text)">?</span> · Rev: <span style="color:var(--text)">10%</span> · EPS: <span style="color:var(--text)">-6%</span> · ROE: <span style="color:var(--text)">14%</span></div>
-                <div>Del: <span style="color:var(--negative)">35.54%</span> (avg 42.0%) · Inst: <span style="color:var(--warn)">26.5%</span></div>
-            </div>
-
-            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check no">RS 33</span><span class="check ok">Earnings</span><span class="check no">Del 35.54%</span><span class="check ok">Close 75%</span><span class="check ok">Inst 26%</span></div>
-            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
-
-            <div class="text-right" style="margin-top:10px">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AASTRAL" target="_blank" class="tv-link">TradingView →</a>
             </div>
         </div>
         <div class="tc" style="border-color:var(--warn)">
@@ -556,7 +458,7 @@ body { padding: 0; }
                 </div>
                 <div class="text-right">
                     <div class="tc-status" style="color:var(--warn)">YELLOW</div>
-                    <div class="tc-meta">Score 51 · RS 17</div>
+                    <div class="tc-meta">Score 51 · RS 26</div>
                 </div>
             </div>
 
@@ -585,11 +487,11 @@ body { padding: 0; }
             </div>
 
             <div class="tc-info">
-                <div>VCP: <span style="color:var(--text)">14.2% → 7.1% (2T)</span> · Earn: <span style="color:var(--text)">22d</span> · Rev: <span style="color:var(--text)">23%</span> · EPS: <span style="color:var(--text)">25%</span> · ROE: <span style="color:var(--text)">21%</span></div>
-                <div>Del: <span style="color:var(--negative)">35.35%</span> (avg 46.1%) · Inst: <span style="color:var(--warn)">15.8%</span></div>
+                <div>VCP: <span style="color:var(--text)">14.2% → 7.1% (2T)</span> · Earn: <span style="color:var(--text)">20d</span> · Rev: <span style="color:var(--text)">23%</span> · EPS: <span style="color:var(--text)">25%</span> · ROE: <span style="color:var(--text)">21%</span></div>
+                <div>Del: <span style="color:var(--warn)">56.99%</span> (avg 46.5%) · Inst: <span style="color:var(--warn)">15.8%</span></div>
             </div>
 
-            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check no">RS 17</span><span class="check ok">Earnings</span><span class="check no">Del 35.35%</span><span class="check ok">Close 77%</span><span class="check ok">Inst 16%</span></div>
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check no">RS 26</span><span class="check ok">Earnings</span><span class="check ok">Del 56.99%</span><span class="check no">Close 46%</span><span class="check ok">Inst 16%</span></div>
             <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
             <div class="text-right" style="margin-top:10px">
@@ -604,7 +506,7 @@ body { padding: 0; }
                 </div>
                 <div class="text-right">
                     <div class="tc-status" style="color:var(--warn)">YELLOW</div>
-                    <div class="tc-meta">Score 51 · RS 94</div>
+                    <div class="tc-meta">Score 51 · RS 100</div>
                 </div>
             </div>
 
@@ -612,7 +514,7 @@ body { padding: 0; }
                 <div class="tc-box">
                     <div class="tc-label">ENTRY</div>
                     <div class="tc-val" style="color:var(--positive)">₹4,344</div>
-                    <div class="tc-sub">5.8% away</div>
+                    <div class="tc-sub">6.2% away</div>
                 </div>
                 <div class="tc-box">
                     <div class="tc-label">STOP</div>
@@ -634,110 +536,14 @@ body { padding: 0; }
 
             <div class="tc-info">
                 <div>VCP: <span style="color:var(--text)">15.4% → 8.7% (2T)</span> · Earn: <span style="color:var(--text)">?</span> · Rev: <span style="color:var(--text)">58%</span> · EPS: <span style="color:var(--text)">104%</span> · ROE: <span style="color:var(--text)">34%</span></div>
-                <div>Del: <span style="color:var(--warn)">52.8%</span> (avg 52.8%) · Inst: <span style="color:var(--warn)">29.7%</span></div>
+                <div>Del: <span style="color:var(--positive)">66.01%</span> (avg 53.2%) · Inst: <span style="color:var(--warn)">29.7%</span></div>
             </div>
 
-            <div class="tc-checks"><span class="check no">Near Pivot</span><span class="check ok">RS 94</span><span class="check ok">Earnings</span><span class="check ok">Del 52.8%</span><span class="check no">Close 57%</span><span class="check ok">Inst 30%</span></div>
+            <div class="tc-checks"><span class="check no">Near Pivot</span><span class="check ok">RS 100</span><span class="check ok">Earnings</span><span class="check ok">Del 66.01%</span><span class="check no">Close 28%</span><span class="check ok">Inst 30%</span></div>
             <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
             <div class="text-right" style="margin-top:10px">
                 <a href="https://www.tradingview.com/chart/?symbol=NSE%3AGVT&D" target="_blank" class="tv-link">TradingView →</a>
-            </div>
-        </div>
-        <div class="tc" style="border-color:var(--warn)">
-            <div class="tc-head">
-                <div>
-                    <div class="tc-sym" style="color:var(--warn)">FEDERALBNK</div>
-                    <div class="tc-meta">Financial Services · Large Cap</div>
-                </div>
-                <div class="text-right">
-                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
-                    <div class="tc-meta">Score 49 · RS 78</div>
-                </div>
-            </div>
-
-            <div class="tc-grid3">
-                <div class="tc-box">
-                    <div class="tc-label">ENTRY</div>
-                    <div class="tc-val" style="color:var(--positive)">₹302</div>
-                    <div class="tc-sub">4.6% away</div>
-                </div>
-                <div class="tc-box">
-                    <div class="tc-label">STOP</div>
-                    <div class="tc-val" style="color:var(--negative)">₹281</div>
-                    <div class="tc-sub">-7%</div>
-                </div>
-                <div class="tc-box">
-                    <div class="tc-label">POSITION</div>
-                    <div class="tc-val">473 sh</div>
-                    <div class="tc-sub">₹142,846</div>
-                </div>
-            </div>
-
-            <div class="tc-grid3 targets">
-                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹323</div></div>
-                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹344</div></div>
-                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹365</div></div>
-            </div>
-
-            <div class="tc-info">
-                <div>VCP: <span style="color:var(--text)">15.3% → 7.7% → 6.1% → 5.0% (4T)</span> · Earn: <span style="color:var(--text)">15d</span> · Rev: <span style="color:var(--text)">15%</span> · EPS: <span style="color:var(--text)">16%</span> · ROE: <span style="color:var(--text)">12%</span></div>
-                <div>Del: <span style="color:var(--warn)">45.23%</span> (avg 52.6%) · Inst: <span style="color:var(--positive)">53.7%</span></div>
-            </div>
-
-            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check ok">RS 78</span><span class="check ok">Earnings</span><span class="check no">Del 45.23%</span><span class="check no">Close 69%</span><span class="check ok">Inst 54%</span></div>
-            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
-
-            <div class="text-right" style="margin-top:10px">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AFEDERALBNK" target="_blank" class="tv-link">TradingView →</a>
-            </div>
-        </div>
-        <div class="tc" style="border-color:var(--warn)">
-            <div class="tc-head">
-                <div>
-                    <div class="tc-sym" style="color:var(--warn)">LT</div>
-                    <div class="tc-meta">Industrials · Large Cap</div>
-                </div>
-                <div class="text-right">
-                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
-                    <div class="tc-meta">Score 48 · RS 6</div>
-                </div>
-            </div>
-
-            <div class="tc-grid3">
-                <div class="tc-box">
-                    <div class="tc-label">ENTRY</div>
-                    <div class="tc-val" style="color:var(--positive)">₹4,032</div>
-                    <div class="tc-sub">1.9% away</div>
-                </div>
-                <div class="tc-box">
-                    <div class="tc-label">STOP</div>
-                    <div class="tc-val" style="color:var(--negative)">₹3,750</div>
-                    <div class="tc-sub">-7%</div>
-                </div>
-                <div class="tc-box">
-                    <div class="tc-label">POSITION</div>
-                    <div class="tc-val">35 sh</div>
-                    <div class="tc-sub">₹141,120</div>
-                </div>
-            </div>
-
-            <div class="tc-grid3 targets">
-                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹4,314</div></div>
-                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹4,596</div></div>
-                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹4,879</div></div>
-            </div>
-
-            <div class="tc-info">
-                <div>VCP: <span style="color:var(--text)">14.5% → 9.6% → 5.8% → 5.4% (4T)</span> · Earn: <span style="color:var(--text)">23d</span> · Rev: <span style="color:var(--text)">11%</span> · EPS: <span style="color:var(--text)">-4%</span> · ROE: <span style="color:var(--text)">15%</span></div>
-                <div>Del: <span style="color:var(--warn)">46.75%</span> (avg 55.1%) · Inst: <span style="color:var(--positive)">49.2%</span></div>
-            </div>
-
-            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check no">RS 6</span><span class="check ok">Earnings</span><span class="check no">Del 46.75%</span><span class="check ok">Close 89%</span><span class="check ok">Inst 49%</span></div>
-            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
-
-            <div class="text-right" style="margin-top:10px">
-                <a href="https://www.tradingview.com/chart/?symbol=NSE%3ALT" target="_blank" class="tv-link">TradingView →</a>
             </div>
         </div>
         <div class="tc" style="border-color:var(--warn)">
@@ -748,7 +554,7 @@ body { padding: 0; }
                 </div>
                 <div class="text-right">
                     <div class="tc-status" style="color:var(--warn)">YELLOW</div>
-                    <div class="tc-meta">Score 43 · RS 61</div>
+                    <div class="tc-meta">Score 51 · RS 79</div>
                 </div>
             </div>
 
@@ -756,7 +562,7 @@ body { padding: 0; }
                 <div class="tc-box">
                     <div class="tc-label">ENTRY</div>
                     <div class="tc-val" style="color:var(--positive)">₹216</div>
-                    <div class="tc-sub">4.6% away</div>
+                    <div class="tc-sub">2.7% away</div>
                 </div>
                 <div class="tc-box">
                     <div class="tc-label">STOP</div>
@@ -777,23 +583,181 @@ body { padding: 0; }
             </div>
 
             <div class="tc-info">
-                <div>VCP: <span style="color:var(--text)">13.6% → 8.9% → 6.5% → 6.1% (4T)</span> · Earn: <span style="color:var(--text)">29d</span> · Rev: <span style="color:var(--text)">6%</span> · EPS: <span style="color:var(--text)">731%</span> · ROE: <span style="color:var(--text)">4%</span></div>
-                <div>Del: <span style="color:var(--negative)">29.03%</span> (avg 41.2%) · Inst: <span style="color:var(--positive)">33.7%</span></div>
+                <div>VCP: <span style="color:var(--text)">13.6% → 8.9% → 6.5% → 6.1% (4T)</span> · Earn: <span style="color:var(--text)">27d</span> · Rev: <span style="color:var(--text)">6%</span> · EPS: <span style="color:var(--text)">731%</span> · ROE: <span style="color:var(--text)">4%</span></div>
+                <div>Del: <span style="color:var(--negative)">38.61%</span> (avg 41.6%) · Inst: <span style="color:var(--positive)">33.7%</span></div>
             </div>
 
-            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check no">RS 61</span><span class="check ok">Earnings</span><span class="check no">Del 29.03%</span><span class="check ok">Close 89%</span><span class="check ok">Inst 34%</span></div>
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check ok">RS 79</span><span class="check ok">Earnings</span><span class="check no">Del 38.61%</span><span class="check no">Close 43%</span><span class="check ok">Inst 34%</span></div>
             <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
 
             <div class="text-right" style="margin-top:10px">
                 <a href="https://www.tradingview.com/chart/?symbol=NSE%3ATATASTEEL" target="_blank" class="tv-link">TradingView →</a>
             </div>
         </div>
+        <div class="tc" style="border-color:var(--warn)">
+            <div class="tc-head">
+                <div>
+                    <div class="tc-sym" style="color:var(--warn)">JINDALSTEL</div>
+                    <div class="tc-meta">Basic Materials · Large Cap</div>
+                </div>
+                <div class="text-right">
+                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
+                    <div class="tc-meta">Score 49 · RS 74</div>
+                </div>
+            </div>
+
+            <div class="tc-grid3">
+                <div class="tc-box">
+                    <div class="tc-label">ENTRY</div>
+                    <div class="tc-val" style="color:var(--positive)">₹1,272</div>
+                    <div class="tc-sub">3.4% away</div>
+                </div>
+                <div class="tc-box">
+                    <div class="tc-label">STOP</div>
+                    <div class="tc-val" style="color:var(--negative)">₹1,183</div>
+                    <div class="tc-sub">-7%</div>
+                </div>
+                <div class="tc-box">
+                    <div class="tc-label">POSITION</div>
+                    <div class="tc-val">112 sh</div>
+                    <div class="tc-sub">₹142,475</div>
+                </div>
+            </div>
+
+            <div class="tc-grid3 targets">
+                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹1,361</div></div>
+                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹1,450</div></div>
+                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹1,539</div></div>
+            </div>
+
+            <div class="tc-info">
+                <div>VCP: <span style="color:var(--text)">11.0% → 8.8% → 7.9% → 5.6% (4T)</span> · Earn: <span style="color:var(--text)">13d</span> · Rev: <span style="color:var(--text)">11%</span> · EPS: <span style="color:var(--text)">-80%</span> · ROE: <span style="color:var(--text)">6%</span></div>
+                <div>Del: <span style="color:var(--warn)">50.34%</span> (avg 41.4%) · Inst: <span style="color:var(--warn)">20.4%</span></div>
+            </div>
+
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check ok">RS 74</span><span class="check no">Earnings</span><span class="check ok">Del 50.34%</span><span class="check no">Close 39%</span><span class="check ok">Inst 20%</span></div>
+            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
+
+            <div class="text-right" style="margin-top:10px">
+                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AJINDALSTEL" target="_blank" class="tv-link">TradingView →</a>
+            </div>
+        </div>
+        <div class="tc" style="border-color:var(--warn)">
+            <div class="tc-head">
+                <div>
+                    <div class="tc-sym" style="color:var(--warn)">MOTHERSON</div>
+                    <div class="tc-meta">Consumer Cyclical · Large Cap</div>
+                </div>
+                <div class="text-right">
+                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
+                    <div class="tc-meta">Score 41 · RS 47</div>
+                </div>
+            </div>
+
+            <div class="tc-grid3">
+                <div class="tc-box">
+                    <div class="tc-label">ENTRY</div>
+                    <div class="tc-val" style="color:var(--positive)">₹126</div>
+                    <div class="tc-sub">2.2% away</div>
+                </div>
+                <div class="tc-box">
+                    <div class="tc-label">STOP</div>
+                    <div class="tc-val" style="color:var(--negative)">₹117</div>
+                    <div class="tc-sub">-7%</div>
+                </div>
+                <div class="tc-box">
+                    <div class="tc-label">POSITION</div>
+                    <div class="tc-val">1137 sh</div>
+                    <div class="tc-sub">₹142,796</div>
+                </div>
+            </div>
+
+            <div class="tc-grid3 targets">
+                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹134</div></div>
+                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹143</div></div>
+                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹152</div></div>
+            </div>
+
+            <div class="tc-info">
+                <div>VCP: <span style="color:var(--text)">11.9% → 10.7% → 9.2% → 7.0% → 5.6% (5T)</span> · Earn: <span style="color:var(--text)">?</span> · Rev: <span style="color:var(--text)">14%</span> · EPS: <span style="color:var(--text)">16%</span> · ROE: <span style="color:var(--text)">11%</span></div>
+                <div>Del: <span style="color:var(--warn)">56.39%</span> (avg 47.5%) · Inst: <span style="color:var(--warn)">26.0%</span></div>
+            </div>
+
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check no">RS 47</span><span class="check ok">Earnings</span><span class="check ok">Del 56.39%</span><span class="check no">Close 16%</span><span class="check ok">Inst 26%</span></div>
+            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
+
+            <div class="text-right" style="margin-top:10px">
+                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AMOTHERSON" target="_blank" class="tv-link">TradingView →</a>
+            </div>
+        </div>
+        <div class="tc" style="border-color:var(--warn)">
+            <div class="tc-head">
+                <div>
+                    <div class="tc-sym" style="color:var(--warn)">MFSL</div>
+                    <div class="tc-meta">Financial Services · Large Cap</div>
+                </div>
+                <div class="text-right">
+                    <div class="tc-status" style="color:var(--warn)">YELLOW</div>
+                    <div class="tc-meta">Score 25 · RS 21</div>
+                </div>
+            </div>
+
+            <div class="tc-grid3">
+                <div class="tc-box">
+                    <div class="tc-label">ENTRY</div>
+                    <div class="tc-val" style="color:var(--positive)">₹1,756</div>
+                    <div class="tc-sub">3.5% away</div>
+                </div>
+                <div class="tc-box">
+                    <div class="tc-label">STOP</div>
+                    <div class="tc-val" style="color:var(--negative)">₹1,633</div>
+                    <div class="tc-sub">-7%</div>
+                </div>
+                <div class="tc-box">
+                    <div class="tc-label">POSITION</div>
+                    <div class="tc-val">81 sh</div>
+                    <div class="tc-sub">₹142,236</div>
+                </div>
+            </div>
+
+            <div class="tc-grid3 targets">
+                <div class="tc-box sm"><div class="tc-label">1R</div><div class="tc-val sm" style="color:var(--info)">₹1,879</div></div>
+                <div class="tc-box sm"><div class="tc-label">2R</div><div class="tc-val sm" style="color:var(--info)">₹2,002</div></div>
+                <div class="tc-box sm"><div class="tc-label">3R</div><div class="tc-val sm" style="color:var(--positive)">₹2,125</div></div>
+            </div>
+
+            <div class="tc-info">
+                <div>VCP: <span style="color:var(--text)">8.6% → 8.1% (2T)</span> · Earn: <span style="color:var(--text)">26d</span> · Rev: <span style="color:var(--text)">-40%</span> · EPS: <span style="color:var(--text)">—</span> · ROE: <span style="color:var(--text)">6%</span></div>
+                <div>Del: <span style="color:var(--positive)">65.17%</span> (avg 59.3%) · Inst: <span style="color:var(--positive)">84.7%</span></div>
+            </div>
+
+            <div class="tc-checks"><span class="check ok">Near Pivot</span><span class="check no">RS 21</span><span class="check ok">Earnings</span><span class="check ok">Del 65.17%</span><span class="check no">Close 33%</span><span class="check ok">Inst 85%</span></div>
+            <div class="tc-exits"><div style="color:var(--positive);font-size:12px">No exit signals</div></div>
+
+            <div class="text-right" style="margin-top:10px">
+                <a href="https://www.tradingview.com/chart/?symbol=NSE%3AMFSL" target="_blank" class="tv-link">TradingView →</a>
+            </div>
+        </div>
         </div>
 
 <div class="footer-note">
-    8 red setups hidden · <a href="dashboard.html">Full Dashboard →</a>
+    9 red setups hidden · <a href="dashboard.html">Full Dashboard →</a>
 </div>
 
 </div>
+
+<script>
+fetch('meta.json?t='+Date.now()).then(r=>r.json()).then(m=>{
+    const ageH = (Date.now()/1000 - m.last_updated_epoch)/3600;
+    const badge = document.getElementById('updatedBadge');
+    if (!badge) return;
+    const timeEl = badge.querySelector('.time');
+    if (ageH < 1) timeEl.textContent = m.last_updated_display + ' · just now';
+    else if (ageH < 24) timeEl.textContent = m.last_updated_display + ' · ' + Math.floor(ageH) + 'h ago';
+    else timeEl.textContent = m.last_updated_display + ' · ' + Math.floor(ageH/24) + 'd ago';
+    if (ageH > 26) badge.classList.add('stale');
+}).catch(()=>{});
+</script>
+
 </body>
 </html>

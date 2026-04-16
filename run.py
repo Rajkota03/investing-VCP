@@ -6,7 +6,14 @@ import json
 import logging
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+IST = timezone(timedelta(hours=5, minutes=30))
+
+
+def ist_now_str() -> str:
+    """Return current IST time formatted for display."""
+    return datetime.now(IST).strftime("%d %b %Y · %I:%M %p IST")
 
 import config
 from engine import run_scan, fetch_all_prices, get_nifty_symbols
@@ -73,6 +80,21 @@ def main() -> None:
     with open(json_path, "w") as f:
         json.dump(setups, f, indent=2, default=str)
     log.info(f"JSON saved: {json_path}")
+
+    # Metadata file (last-updated timestamp for index.html to read)
+    meta = {
+        "last_updated_iso": datetime.now(IST).isoformat(),
+        "last_updated_display": ist_now_str(),
+        "last_updated_epoch": int(datetime.now(IST).timestamp()),
+        "setups_total": len(setups),
+        "setups_green": sum(1 for s in setups if s.get("readiness") == "GREEN"),
+        "setups_yellow": sum(1 for s in setups if s.get("readiness") == "YELLOW"),
+        "scan_seconds": round(elapsed),
+    }
+    meta_path = os.path.join(config.OUTPUT_DIR, "meta.json")
+    with open(meta_path, "w") as f:
+        json.dump(meta, f, indent=2)
+    log.info(f"Meta saved: {meta_path}")
 
     # Full dashboard (detailed)
     html_path = os.path.join(config.OUTPUT_DIR, config.DASHBOARD_FILENAME)
@@ -188,7 +210,9 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
+    gap: 12px;
 }
+.nav-left { display: flex; align-items: center; gap: 16px; }
 .nav-logo { font-weight: 700; font-size: 15px; color: var(--text); text-decoration: none; }
 .nav-logo span { color: var(--accent); }
 .nav-links { display: flex; gap: 4px; }
@@ -203,6 +227,43 @@ body {
 }
 .nav-links a:hover { color: var(--text); background: var(--surface2); }
 .nav-links a.active { color: var(--accent); background: var(--accent-dim); }
+
+.updated {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+}
+.updated .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--positive);
+    box-shadow: 0 0 0 0 var(--positive);
+    animation: pulse 2s infinite;
+}
+.updated .label { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; }
+.updated .time { color: var(--text); font-weight: 500; }
+.updated.stale .pulse { background: var(--warn); animation: none; }
+.updated.stale .time { color: var(--warn); }
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(76, 175, 124, 0.5); }
+    70% { box-shadow: 0 0 0 8px rgba(76, 175, 124, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(76, 175, 124, 0); }
+}
+
+@media (max-width: 640px) {
+    .nav { padding: 10px 14px; gap: 8px; flex-wrap: wrap; }
+    .nav-left { gap: 10px; }
+    .updated { padding: 5px 10px; font-size: 10px; }
+    .updated .label { display: none; }
+}
 """
 
 
@@ -211,7 +272,7 @@ body {
 # ──────────────────────────────────────────────────────────────
 
 def generate_dashboard(setups: list[dict], elapsed: float) -> str:
-    now = datetime.now().strftime("%d %b %Y, %I:%M %p")
+    now = ist_now_str()
     n = len(setups)
     earnings_clear = sum(1 for s in setups if "EARNINGS_CLEAR" in s.get("flags", []))
     tailwind = sum(1 for s in setups if "SECTOR_TAILWIND" in s.get("flags", []))
@@ -431,16 +492,23 @@ tr.sel {{ background: var(--accent-dim); }}
 <body>
 
 <nav class="nav">
-    <a href="index.html" class="nav-logo">VCP <span>Scanner</span></a>
-    <div class="nav-links">
-        <a href="action.html">Action Board</a>
-        <a href="dashboard.html" class="active">Dashboard</a>
+    <div class="nav-left">
+        <a href="index.html" class="nav-logo">VCP <span>Scanner</span></a>
+        <div class="nav-links">
+            <a href="action.html">Action Board</a>
+            <a href="dashboard.html" class="active">Dashboard</a>
+        </div>
+    </div>
+    <div class="updated" id="updatedBadge" data-updated="{now}">
+        <span class="pulse"></span>
+        <span class="label">Updated</span>
+        <span class="time">{now}</span>
     </div>
 </nav>
 
 <div class="header">
     <div class="logo">VCP <span>Scanner</span></div>
-    <div class="meta">{now} &middot; {n} setups &middot; {elapsed:.0f}s</div>
+    <div class="meta">{n} setups &middot; scan took {elapsed:.0f}s</div>
 </div>
 
 <div class="stats">
@@ -658,6 +726,18 @@ function detail(d) {{
     `;
 }}
 
+// Check staleness of data
+fetch('meta.json?t='+Date.now()).then(r=>r.json()).then(m=>{{
+    const ageH = (Date.now()/1000 - m.last_updated_epoch)/3600;
+    const badge = document.getElementById('updatedBadge');
+    if (!badge) return;
+    const timeEl = badge.querySelector('.time');
+    if (ageH < 1) timeEl.textContent = m.last_updated_display + ' · just now';
+    else if (ageH < 24) timeEl.textContent = m.last_updated_display + ' · ' + Math.floor(ageH) + 'h ago';
+    else timeEl.textContent = m.last_updated_display + ' · ' + Math.floor(ageH/24) + 'd ago';
+    if (ageH > 26) badge.classList.add('stale');
+}}).catch(()=>{{}});
+
 document.querySelectorAll(".fbtn").forEach(b=>{{
     b.addEventListener("click",()=>{{
         document.querySelectorAll(".fbtn").forEach(x=>x.classList.remove("on"));
@@ -687,7 +767,7 @@ if (D.length>0) sel(0);
 # ──────────────────────────────────────────────────────────────
 
 def generate_action_board(setups: list[dict], elapsed: float) -> str:
-    now = datetime.now().strftime("%d %b %Y, %I:%M %p")
+    now = ist_now_str()
 
     green = [s for s in setups if s.get("readiness") == "GREEN"]
     yellow = [s for s in setups if s.get("readiness") == "YELLOW"]
@@ -991,10 +1071,17 @@ body {{ padding: 0; }}
 <body>
 
 <nav class="nav">
-    <a href="index.html" class="nav-logo">VCP <span>Scanner</span></a>
-    <div class="nav-links">
-        <a href="action.html" class="active">Action Board</a>
-        <a href="dashboard.html">Dashboard</a>
+    <div class="nav-left">
+        <a href="index.html" class="nav-logo">VCP <span>Scanner</span></a>
+        <div class="nav-links">
+            <a href="action.html" class="active">Action Board</a>
+            <a href="dashboard.html">Dashboard</a>
+        </div>
+    </div>
+    <div class="updated" id="updatedBadge" data-updated="{now}">
+        <span class="pulse"></span>
+        <span class="label">Updated</span>
+        <span class="time">{now}</span>
     </div>
 </nav>
 
@@ -1002,7 +1089,7 @@ body {{ padding: 0; }}
 
 <div class="ab-header">
     <div class="ab-title">VCP <span>Action Board</span></div>
-    <div class="ab-meta">{now} · {len(setups)} scanned · {elapsed:.0f}s</div>
+    <div class="ab-meta">{len(setups)} scanned &middot; scan took {elapsed:.0f}s</div>
 </div>
 
 <div class="ab-stats">
@@ -1019,6 +1106,20 @@ body {{ padding: 0; }}
 </div>
 
 </div>
+
+<script>
+fetch('meta.json?t='+Date.now()).then(r=>r.json()).then(m=>{{
+    const ageH = (Date.now()/1000 - m.last_updated_epoch)/3600;
+    const badge = document.getElementById('updatedBadge');
+    if (!badge) return;
+    const timeEl = badge.querySelector('.time');
+    if (ageH < 1) timeEl.textContent = m.last_updated_display + ' · just now';
+    else if (ageH < 24) timeEl.textContent = m.last_updated_display + ' · ' + Math.floor(ageH) + 'h ago';
+    else timeEl.textContent = m.last_updated_display + ' · ' + Math.floor(ageH/24) + 'd ago';
+    if (ageH > 26) badge.classList.add('stale');
+}}).catch(()=>{{}});
+</script>
+
 </body>
 </html>"""
 
