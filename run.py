@@ -42,6 +42,19 @@ def main() -> None:
 
     prices = fetch_all_prices(symbols)
 
+    # Sanity check: NSE geo-blocks non-Indian IPs. If we got almost nothing
+    # back, the data source is broken — fail loudly so the workflow goes red
+    # and the user gets a GitHub email, instead of silently publishing a
+    # "0 setups" page that looks identical to a legitimate empty day.
+    min_expected = max(50, int(len(symbols) * 0.5))
+    if len(prices) < min_expected:
+        log.error(
+            f"DATA FETCH FAILED: got {len(prices)} price series for {len(symbols)} "
+            f"symbols (need >= {min_expected}). Likely NSE geo-block from CI runner. "
+            f"Run the scanner from an Indian IP or via a Mumbai-region VM."
+        )
+        sys.exit(2)
+
     # Stage 2 filter
     stage2_passed = []
     for sym, df in prices.items():
