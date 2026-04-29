@@ -885,6 +885,9 @@ def generate_action_board(setups: list[dict], elapsed: float) -> str:
 
     green_cards = "".join(_card(s) for s in green)
     yellow_cards = "".join(_card(s) for s in yellow)
+    # Top 5 reds as a fallback so the page is never empty
+    red_top = sorted(red, key=lambda x: x.get("score", 0), reverse=True)[:5]
+    red_cards = "".join(_card(s) for s in red_top)
 
     green_section = ""
     if green:
@@ -894,11 +897,11 @@ def generate_action_board(setups: list[dict], elapsed: float) -> str:
             <p class="section-sub">All 6 entry conditions met. Set alerts at pivot, buy on volume confirmation.</p>
             {green_cards}
         </div>"""
-    else:
+    elif yellow:
         green_section = """
-        <div class="empty-state">
-            <div class="empty-title">No green setups today</div>
-            <p class="empty-sub">No stocks pass all 6 entry conditions right now. Check WATCH setups — they may ripen in 1-3 days.</p>
+        <div class="empty-state" style="padding:20px">
+            <div class="empty-title">No GREEN setups today</div>
+            <p class="empty-sub">No stocks pass all 6 entry conditions yet — check WATCH list below.</p>
         </div>"""
 
     yellow_section = ""
@@ -909,6 +912,29 @@ def generate_action_board(setups: list[dict], elapsed: float) -> str:
             <p class="section-sub">4-5 conditions met. Set price alerts — these could turn GREEN in 1-3 days.</p>
             {yellow_cards}
         </div>"""
+
+    # Fallback: when both GREEN and YELLOW are empty, show top REDs so the page
+    # is never blank. RED = setup detected but multiple entry conditions failing,
+    # so framed as "monitoring" not "buy".
+    red_section = ""
+    if not green and not yellow:
+        if red_top:
+            red_section = f"""
+            <div class="empty-state" style="padding:24px;margin-bottom:20px">
+                <div class="empty-title">Nothing actionable today</div>
+                <p class="empty-sub">Zero GREEN, zero YELLOW. Showing the {len(red_top)} closest setups so you can monitor them — none are ready to act on.</p>
+            </div>
+            <div class="section">
+                <h2 class="section-title" style="color:var(--text-dim)">MONITORING — top {len(red_top)} of {len(red)} red</h2>
+                <p class="section-sub">These have a VCP pattern but multiple entry conditions are still failing. They are NOT buy candidates — just watch what's closest to ripening.</p>
+                {red_cards}
+            </div>"""
+        else:
+            red_section = """
+            <div class="empty-state" style="padding:40px">
+                <div class="empty-title">Quiet day — no setups detected</div>
+                <p class="empty-sub">The scan ran successfully but no stocks formed a valid VCP pattern today. This happens — markets aren't always set up. Check back tomorrow.</p>
+            </div>"""
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -1113,6 +1139,7 @@ body {{ padding: 0; }}
 
 {green_section}
 {yellow_section}
+{red_section}
 
 <div class="footer-note">
     {len(red)} red setups hidden · <a href="dashboard.html">Full Dashboard →</a>
