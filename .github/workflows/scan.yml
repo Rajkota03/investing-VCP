@@ -1,10 +1,12 @@
 name: VCP Scanner
 
 on:
-  schedule:
-    # 8:30 AM IST = 3:00 UTC (weekdays only)
-    - cron: "0 3 * * 1-5"
-  workflow_dispatch: # manual trigger button
+  # Scheduled runs disabled — GitHub's US runners are geo-blocked by NSE.
+  # The daily scan now runs from an Oracle Cloud VM in Mumbai (Indian IP).
+  # This workflow stays available as a manual trigger / emergency fallback;
+  # it WILL fail (returns 0 setups) but won't overwrite real data because
+  # run.py exits non-zero when fetch_all_prices comes back empty.
+  workflow_dispatch:
 
 permissions:
   contents: write
