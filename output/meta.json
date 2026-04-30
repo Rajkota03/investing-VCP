@@ -1,9 +1,9 @@
 {
-  "last_updated_iso": "2026-04-29T10:09:55.899167+05:30",
-  "last_updated_display": "29 Apr 2026 \u00b7 10:09 AM IST",
-  "last_updated_epoch": 1777437595,
-  "setups_total": 4,
+  "last_updated_iso": "2026-04-30T08:51:30.578118+05:30",
+  "last_updated_display": "30 Apr 2026 \u00b7 08:51 AM IST",
+  "last_updated_epoch": 1777519290,
+  "setups_total": 2,
   "setups_green": 0,
-  "setups_yellow": 0,
-  "scan_seconds": 4
+  "setups_yellow": 1,
+  "scan_seconds": 11
 }
